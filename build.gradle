@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group 'nl.daanh'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
+    compile group: 'net.dv8tion', name: 'JDA', version: '4.2.0_204'
+
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    // https://github.com/cdimascio/java-dotenv
+    compile group: 'io.github.cdimascio', name: 'dotenv-kotlin', version: '6.0.0'
+}
