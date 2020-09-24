@@ -48,7 +48,7 @@ public class CommandManager {
     }
 
     @Nullable
-    private CommandInterface getCommand(String invoke) {
+    public CommandInterface getCommand(String invoke) {
         String invokeLowerCase = invoke.toLowerCase();
 
         return this.commands.getOrDefault(invokeLowerCase, null);
