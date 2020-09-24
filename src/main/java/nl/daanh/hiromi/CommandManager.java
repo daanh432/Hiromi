@@ -4,7 +4,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromi.commands.HelpCommand;
 import nl.daanh.hiromi.commands.PingCommand;
 import nl.daanh.hiromi.commands.annotations.CommandCategory;
+import nl.daanh.hiromi.commands.annotations.CommandHelp;
 import nl.daanh.hiromi.commands.annotations.CommandInvoke;
+import nl.daanh.hiromi.commands.annotations.SelfPermission;
 import nl.daanh.hiromi.commands.context.CommandContext;
 import nl.daanh.hiromi.commands.context.CommandInterface;
 import nl.daanh.hiromi.database.DatabaseManager;
@@ -25,6 +27,10 @@ public class CommandManager {
     }
 
     private void addCommand(CommandInterface command) {
+        if (command.getClass().getAnnotation(CommandCategory.class) == null) throw new RuntimeException("Command category is required.");
+        if (command.getClass().getAnnotation(CommandHelp.class) == null) throw new RuntimeException("Command help is required.");
+        if (command.getClass().getAnnotationsByType(SelfPermission.class).length == 0) throw new RuntimeException("Command self permissions are required.");
+
         for (CommandInvoke annotation : command.getClass().getAnnotationsByType(CommandInvoke.class)) {
             if (this.commands.containsKey(annotation.value())) {
                 throw new RuntimeException("Invoke has already been defined!");
@@ -60,9 +66,7 @@ public class CommandManager {
 
         boolean enabled = DatabaseManager.instance.getEnabledCategories(event.getGuild())
                 .stream()
-                .anyMatch((category ->
-                        category == command.getClass().getAnnotation(CommandCategory.class).value()
-                ));
+                .anyMatch((category -> category == command.getClass().getAnnotation(CommandCategory.class).value()));
 
         if (!enabled) return;
 
