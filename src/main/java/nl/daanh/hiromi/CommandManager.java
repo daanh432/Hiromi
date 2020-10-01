@@ -30,6 +30,7 @@ public class CommandManager {
         this.addCommand(new PauseCommand());
         this.addCommand(new ResumeCommand());
         this.addCommand(new StopCommand());
+        this.addCommand(new NowPlayingCommand());
     }
 
     private void addCommand(CommandInterface command) {
