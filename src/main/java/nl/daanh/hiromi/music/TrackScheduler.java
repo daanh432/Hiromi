@@ -46,7 +46,7 @@ public class TrackScheduler extends AudioEventAdapter {
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
 
-        if (queue.size() >= QUEUE_SIZE) {
+        if (this.getQueueSize() >= this.getMaxQueueSize()) {
             throw new QueueToBigException("Queue size limit has been reached / surpassed");
         }
 
@@ -69,27 +69,25 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onPlayerPause(AudioPlayer player) {
         // Player was paused
-        this.guildMusicManager.getLastChannel().sendMessage("The player was paused").queue();
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
         // Player was resumed
-        this.guildMusicManager.getLastChannel().sendMessage("The player was resumed").queue();
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         // A track started playing
-        this.guildMusicManager.getLastChannel().sendMessage("The track is starting").queue();
+        this.guildMusicManager.getLastChannel().sendMessage(String.format("Now playing the track: ``%s``", track.getInfo().title)).queue();
     }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        this.guildMusicManager.getLastChannel().sendMessage("The track has ended").queue();
         if (endReason.mayStartNext) {
             // Start next track
             this.nextTrack();
+            this.guildMusicManager.getLastChannel().sendMessage("The track has ended").queue();
         }
 
         // endReason == FINISHED: A track finished or died by an exception (mayStartNext = true).
