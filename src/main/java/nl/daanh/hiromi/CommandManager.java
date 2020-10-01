@@ -9,10 +9,7 @@ import nl.daanh.hiromi.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.commands.annotations.SelfPermission;
 import nl.daanh.hiromi.commands.context.CommandContext;
 import nl.daanh.hiromi.commands.context.CommandInterface;
-import nl.daanh.hiromi.commands.music.JoinCommand;
-import nl.daanh.hiromi.commands.music.PauseCommand;
-import nl.daanh.hiromi.commands.music.PlayCommand;
-import nl.daanh.hiromi.commands.music.ResumeCommand;
+import nl.daanh.hiromi.commands.music.*;
 import nl.daanh.hiromi.database.DatabaseManager;
 
 import javax.annotation.Nullable;
@@ -32,6 +29,7 @@ public class CommandManager {
         this.addCommand(new JoinCommand());
         this.addCommand(new PauseCommand());
         this.addCommand(new ResumeCommand());
+        this.addCommand(new StopCommand());
     }
 
     private void addCommand(CommandInterface command) {
