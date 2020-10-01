@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import nl.daanh.hiromi.listeners.GuildMessageListener;
+import nl.daanh.hiromi.listeners.MessageReactionListener;
+import nl.daanh.hiromi.listeners.MusicPauseListener;
 
 import javax.security.auth.login.LoginException;
 
@@ -19,6 +21,8 @@ public class Main {
         configureMemoryUsage(jdaBuilder);
 
         jdaBuilder.addEventListeners(new GuildMessageListener());
+        jdaBuilder.addEventListeners(new MusicPauseListener());
+        jdaBuilder.addEventListeners(new MessageReactionListener());
 
         jdaBuilder.build();
     }
