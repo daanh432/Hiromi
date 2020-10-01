@@ -26,5 +26,5 @@ dependencies {
     compile group: 'com.sedmelluq', name: 'lavaplayer', version: '1.3.50'
 
     // https://mvnrepository.com/artifact/com.sedmelluq/lavaplayer-common
-    compile group: 'com.sedmelluq', name: 'lavaplayer-common', version: '1.0.6'
+    // compile group: 'com.sedmelluq', name: 'lavaplayer-common', version: '1.0.6'
 }
