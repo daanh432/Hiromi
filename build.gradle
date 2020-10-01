@@ -20,5 +20,5 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
     // https://github.com/cdimascio/java-dotenv
-    compile group: 'io.github.cdimascio', name: 'dotenv-kotlin', version: '6.0.0'
+    compile group: 'io.github.cdimascio', name: 'dotenv-java', version: '1.1.0'
 }

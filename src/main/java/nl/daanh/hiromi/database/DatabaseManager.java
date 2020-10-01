@@ -6,7 +6,7 @@ import nl.daanh.hiromi.commands.annotations.CommandCategory;
 import java.util.List;
 
 public interface DatabaseManager {
-    DatabaseManager instance = null;
+    DatabaseManager instance = new HiromiApiDataSource();
 
     String getPrefix(Guild guild);
 
