@@ -48,6 +48,6 @@ public class HiromiApiDataSource implements DatabaseManager {
 
     @Override
     public List<CommandCategory.CATEGORY> getEnabledCategories(Guild guild) {
-        return List.of(CommandCategory.CATEGORY.OTHER);
+        return List.of(CommandCategory.CATEGORY.OTHER, CommandCategory.CATEGORY.MUSIC);
     }
 }
