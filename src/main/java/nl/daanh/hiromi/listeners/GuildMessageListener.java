@@ -1,5 +1,6 @@
 package nl.daanh.hiromi.listeners;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -11,8 +12,8 @@ public class GuildMessageListener extends ListenerAdapter {
     private final CommandManager commandManager;
     private final Dotenv dotenv = Dotenv.load();
 
-    public GuildMessageListener() {
-        this.commandManager = new CommandManager();
+    public GuildMessageListener(EventWaiter eventWaiter) {
+        this.commandManager = new CommandManager(eventWaiter);
     }
 
     @Override

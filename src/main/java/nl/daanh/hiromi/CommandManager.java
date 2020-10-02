@@ -1,5 +1,6 @@
 package nl.daanh.hiromi;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromi.commands.HelpCommand;
 import nl.daanh.hiromi.commands.PingCommand;
@@ -22,7 +23,7 @@ import java.util.regex.Pattern;
 public class CommandManager {
     private final HashMap<String, CommandInterface> commands = new HashMap<>();
 
-    public CommandManager() {
+    public CommandManager(EventWaiter eventWaiter) {
         this.addCommand(new PingCommand());
         this.addCommand(new HelpCommand(this));
         this.addCommand(new PlayCommand());
@@ -31,6 +32,7 @@ public class CommandManager {
         this.addCommand(new ResumeCommand());
         this.addCommand(new StopCommand());
         this.addCommand(new NowPlayingCommand());
+        this.addCommand(new QueueCommand(eventWaiter));
     }
 
     private void addCommand(CommandInterface command) {

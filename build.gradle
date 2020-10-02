@@ -27,4 +27,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.sedmelluq/lavaplayer-common
     // compile group: 'com.sedmelluq', name: 'lavaplayer-common', version: '1.0.6'
+
+    // https://mvnrepository.com/artifact/com.jagrosh/jda-utilities-commons
+    compile group: 'com.jagrosh', name: 'jda-utilities-commons', version: '3.0.4'
+
+    // https://mvnrepository.com/artifact/com.jagrosh/jda-utilities-menu
+    compile group: 'com.jagrosh', name: 'jda-utilities-menu', version: '3.0.4'
 }

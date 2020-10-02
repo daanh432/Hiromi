@@ -1,8 +1,11 @@
 package nl.daanh.hiromi;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -14,17 +17,21 @@ import javax.security.auth.login.LoginException;
 
 public class Main {
     private static final Dotenv dotenv = Dotenv.load();
+    private static ShardManager shardManager;
 
     public static void main(String[] args) throws LoginException {
-
-        DefaultShardManagerBuilder jdaBuilder = DefaultShardManagerBuilder.createDefault(dotenv.get("DISCORD_TOKEN", null));
+        final EventWaiter eventWaiter = new EventWaiter();
+        final DefaultShardManagerBuilder jdaBuilder = DefaultShardManagerBuilder.createDefault(dotenv.get("DISCORD_TOKEN", null));
         configureMemoryUsage(jdaBuilder);
 
-        jdaBuilder.addEventListeners(new GuildMessageListener());
-        jdaBuilder.addEventListeners(new MusicPauseListener());
+        jdaBuilder.addEventListeners(new GuildMessageListener(eventWaiter));
         jdaBuilder.addEventListeners(new MessageReactionListener());
+        jdaBuilder.addEventListeners(new MusicPauseListener());
+        jdaBuilder.addEventListeners(eventWaiter);
 
-        jdaBuilder.build();
+        jdaBuilder.setActivity(Activity.listening("hi!help"));
+
+        shardManager = jdaBuilder.build();
     }
 
     public static void configureMemoryUsage(DefaultShardManagerBuilder builder) {

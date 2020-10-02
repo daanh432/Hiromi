@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public BlockingQueue<AudioTrack> getQueue() {
-        return queue;
+        return this.queue;
     }
 
     public int getQueueSize() {
@@ -50,10 +51,10 @@ public class TrackScheduler extends AudioEventAdapter {
             throw new QueueToBigException("Queue size limit has been reached / surpassed");
         }
 
-        if (player.getPlayingTrack() != null) {
-            queue.offer(track);
+        if (this.player.getPlayingTrack() != null) {
+            this.queue.offer(track);
         } else {
-            player.playTrack(track);
+            this.player.playTrack(track);
         }
     }
 
@@ -63,7 +64,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
-        player.startTrack(queue.poll(), false);
+        this.player.startTrack(this.queue.poll(), false);
     }
 
     @Override
@@ -79,6 +80,14 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         // A track started playing
+        try {
+            this.guildMusicManager.getLastChannel().getGuild().getSelfMember().deafen(true).queue();
+        } catch (InsufficientPermissionException e) {
+            this.guildMusicManager.getLastChannel().sendMessage("Please give me the permissions to server deafen myself.\n" +
+                    "This will increase the performance on your and everyone else's audio playback experience.").queue();
+        } catch (Exception ignore) {
+            // ignore
+        }
         this.guildMusicManager.getLastChannel().sendMessage(String.format("Now playing the track: ``%s``", track.getInfo().title)).queue();
     }
 
