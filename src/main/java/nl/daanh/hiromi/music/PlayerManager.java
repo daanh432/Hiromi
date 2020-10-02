@@ -114,7 +114,7 @@ public class PlayerManager {
                 try {
                     musicManager.scheduler.queue(track);
                 } catch (QueueToBigException e) {
-                    e.printStackTrace();
+                    textChannel.sendMessage("I'm sorry the maximum queue size has been reached").queue();
                 }
             }
 
@@ -129,14 +129,16 @@ public class PlayerManager {
                 try {
                     musicManager.scheduler.queue(firstTrack);
                 } catch (QueueToBigException e) {
-                    e.printStackTrace();
+                    textChannel.sendMessage("I'm sorry the maximum queue size has been reached").queue();
+                    return;
                 }
 
                 for (AudioTrack audioTrack : playlist.getTracks()) {
                     try {
                         musicManager.scheduler.queue(audioTrack);
                     } catch (QueueToBigException e) {
-                        e.printStackTrace();
+                        textChannel.sendMessage("I'm sorry the maximum queue size has been reached").queue();
+                        return;
                     }
                 }
             }
@@ -144,11 +146,13 @@ public class PlayerManager {
             @Override
             public void noMatches() {
                 // Notify the user that we've got nothing
+                textChannel.sendMessage("Hmmmm. 404 not found? We couldn't find any matches.").queue();
             }
 
             @Override
             public void loadFailed(FriendlyException throwable) {
                 // Notify the user that everything exploded
+                textChannel.sendMessage("Oops. Something went wrong whilst loading that track.").queue();
             }
         });
     }

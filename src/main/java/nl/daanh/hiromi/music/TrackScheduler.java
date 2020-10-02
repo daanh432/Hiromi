@@ -64,6 +64,10 @@ public class TrackScheduler extends AudioEventAdapter {
     public void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
+        AudioTrack track = this.queue.poll();
+        while (track == this.player.getPlayingTrack()) {
+            track = this.queue.poll();
+        }
         this.player.startTrack(this.queue.poll(), false);
     }
 
