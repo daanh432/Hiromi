@@ -10,6 +10,7 @@ import nl.daanh.hiromi.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.commands.annotations.SelfPermission;
 import nl.daanh.hiromi.commands.context.CommandContext;
 import nl.daanh.hiromi.commands.context.CommandInterface;
+import nl.daanh.hiromi.listeners.MusicPauseListener;
 import nl.daanh.hiromi.music.PlayerManager;
 
 @CommandInvoke("pause")
@@ -46,5 +47,6 @@ public class PauseCommand implements CommandInterface {
         channel.sendMessage("*yawns* I'm going to take a quick nap now. I'm pausing playback for you.").queue();
         playerManager.setPaused(guild, true);
         playerManager.setLastChannel(guild, channel);
+        MusicPauseListener.scheduleDisconnect(guild);
     }
 }

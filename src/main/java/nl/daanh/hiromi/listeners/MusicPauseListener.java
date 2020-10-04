@@ -9,8 +9,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nl.daanh.hiromi.music.PlayerManager;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MusicPauseListener extends ListenerAdapter {
+    private static final Timer timer = new Timer();
+    private static final HashMap<Long, TimerTask> timerTasks = new HashMap<>();
+
     /**
      * Checks if music playback should be paused
      *
@@ -27,18 +33,24 @@ public class MusicPauseListener extends ListenerAdapter {
         }
     }
 
-    /**
-     * Pauses music playback
-     *
-     * @param playerManager a playerManager instance
-     * @param guild         the guild where the event happened
-     */
-    private void pauseMusic(@Nonnull PlayerManager playerManager, @Nonnull Guild guild) {
-        TextChannel announceChannel = playerManager.getLastChannel(guild);
-        if (announceChannel != null && announceChannel.canTalk() && !playerManager.isPaused(guild)) {
-            announceChannel.sendMessage("Pausing music playback because everyone left the channel.").queue();
-        }
-        playerManager.setPaused(guild, true);
+    public static void scheduleDisconnect(Guild guild) {
+        if (MusicPauseListener.timerTasks.containsKey(guild.getIdLong())) return;
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                if (guild.getAudioManager().getConnectedChannel() != null) {
+                    PlayerManager playerManager = PlayerManager.getInstance();
+                    TextChannel announceChannel = playerManager.getLastChannel(guild);
+                    if (announceChannel != null)
+                        announceChannel.sendMessage("It looks like I'm no longer needed. Feel free to summon me again! Bye bye :wave:").queue();
+                    playerManager.purge(guild);
+                    guild.getAudioManager().closeAudioConnection();
+                }
+            }
+        };
+
+        MusicPauseListener.timer.schedule(task, 300000);
+        MusicPauseListener.timerTasks.put(guild.getIdLong(), task);
     }
 
     @Override
@@ -52,5 +64,25 @@ public class MusicPauseListener extends ListenerAdapter {
         if (event.getMember().equals(event.getGuild().getSelfMember())) {
             this.pauseMusic(PlayerManager.getInstance(), event.getGuild());
         }
+    }
+
+    public static void unScheduleDisconnect(Guild guild) {
+        TimerTask task = MusicPauseListener.timerTasks.remove(guild.getIdLong());
+        if (task != null) task.cancel();
+    }
+
+    /**
+     * Pauses music playback
+     *
+     * @param playerManager a playerManager instance
+     * @param guild         the guild where the event happened
+     */
+    private void pauseMusic(@Nonnull PlayerManager playerManager, @Nonnull Guild guild) {
+        TextChannel announceChannel = playerManager.getLastChannel(guild);
+        if (announceChannel != null && announceChannel.canTalk() && !playerManager.isPaused(guild)) {
+            announceChannel.sendMessage("Pausing music playback because everyone left the channel.").queue();
+        }
+        MusicPauseListener.scheduleDisconnect(guild);
+        playerManager.setPaused(guild, true);
     }
 }

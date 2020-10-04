@@ -10,6 +10,7 @@ import nl.daanh.hiromi.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.commands.annotations.SelfPermission;
 import nl.daanh.hiromi.commands.context.CommandContext;
 import nl.daanh.hiromi.commands.context.CommandInterface;
+import nl.daanh.hiromi.listeners.MusicPauseListener;
 import nl.daanh.hiromi.music.PlayerManager;
 
 @CommandInvoke("resume")
@@ -46,5 +47,6 @@ public class ResumeCommand implements CommandInterface {
         channel.sendMessage("Who poked me? I'm resuming playback for you.").queue();
         playerManager.setPaused(guild, false);
         playerManager.setLastChannel(guild, channel);
+        MusicPauseListener.unScheduleDisconnect(guild);
     }
 }
