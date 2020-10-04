@@ -3,6 +3,7 @@ package nl.daanh.hiromi.commands.context;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.sharding.ShardManager;
 
 public interface CommandContextInterface {
@@ -23,4 +24,6 @@ public interface CommandContextInterface {
     Member getSelfMember();
 
     ShardManager getShardManager();
+
+    AudioManager getAudioManager();
 }

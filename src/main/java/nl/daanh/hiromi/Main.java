@@ -1,12 +1,54 @@
 package nl.daanh.hiromi;
 
-import nl.daanh.hiromi.commands.PingCommand;
-import nl.daanh.hiromi.commands.annotations.CommandCategory;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import nl.daanh.hiromi.listeners.GuildMessageListener;
+import nl.daanh.hiromi.listeners.MessageReactionListener;
+import nl.daanh.hiromi.listeners.MusicPauseListener;
+
+import javax.security.auth.login.LoginException;
 
 public class Main {
-    public static void main(String[] args) {
-        PingCommand pingCommand = new PingCommand();
-        CommandCategory annotation = pingCommand.getClass().getAnnotation(CommandCategory.class);
-        System.out.println(annotation.value());
+    private static final Dotenv dotenv = Dotenv.load();
+    private static ShardManager shardManager;
+
+    public static void main(String[] args) throws LoginException {
+        final EventWaiter eventWaiter = new EventWaiter();
+        final DefaultShardManagerBuilder jdaBuilder = DefaultShardManagerBuilder.createDefault(dotenv.get("DISCORD_TOKEN", null));
+        configureMemoryUsage(jdaBuilder);
+
+        jdaBuilder.addEventListeners(new GuildMessageListener(eventWaiter));
+        jdaBuilder.addEventListeners(new MessageReactionListener());
+        jdaBuilder.addEventListeners(new MusicPauseListener());
+        jdaBuilder.addEventListeners(eventWaiter);
+
+        jdaBuilder.setActivity(Activity.listening("hi!help"));
+
+        shardManager = jdaBuilder.build();
+    }
+
+    public static void configureMemoryUsage(DefaultShardManagerBuilder builder) {
+        // Disable cache for member activities (streaming/games/spotify)
+        builder.disableCache(CacheFlag.ACTIVITY);
+
+        // Only cache members who are either in a voice channel or owner of the guild
+        builder.setMemberCachePolicy(MemberCachePolicy.VOICE);
+
+        // Disable member chunking on startup
+        builder.setChunkingFilter(ChunkingFilter.NONE);
+
+        // Disable presence updates and typing events
+        builder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS);
+
+        // Consider guilds with more than 10 members as "large".
+        // Large guilds will only provide online members in their setup and thus reduce bandwidth if chunking is disabled.
+        builder.setLargeThreshold(10);
     }
 }
