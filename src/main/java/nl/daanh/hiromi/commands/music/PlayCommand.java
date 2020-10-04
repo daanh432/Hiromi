@@ -4,10 +4,7 @@ package nl.daanh.hiromi.commands.music;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import nl.daanh.hiromi.commands.annotations.CommandCategory;
-import nl.daanh.hiromi.commands.annotations.CommandHelp;
-import nl.daanh.hiromi.commands.annotations.CommandInvoke;
-import nl.daanh.hiromi.commands.annotations.SelfPermission;
+import nl.daanh.hiromi.commands.annotations.*;
 import nl.daanh.hiromi.commands.context.CommandContext;
 import nl.daanh.hiromi.commands.context.CommandInterface;
 import nl.daanh.hiromi.music.PlayerManager;
@@ -21,6 +18,7 @@ import java.util.List;
 @CommandInvoke("add")
 @CommandHelp("Plays a song from a youtube video or playlist.")
 @CommandCategory(CommandCategory.CATEGORY.MUSIC)
+@CommandArgument(value = "url", type = CommandArgument.TYPE.STRING)
 @SelfPermission(Permission.MESSAGE_WRITE)
 @SelfPermission(Permission.VOICE_CONNECT)
 @SelfPermission(Permission.VOICE_SPEAK)
@@ -48,7 +46,7 @@ public class PlayCommand implements CommandInterface {
             return;
         }
 
-        if (!isUrl(input)) {
+        if (!this.isUrl(input)) {
             channel.sendMessage("Please specify a valid url").queue();
         }
 

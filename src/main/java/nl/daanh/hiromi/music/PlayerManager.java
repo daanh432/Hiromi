@@ -87,17 +87,17 @@ public class PlayerManager {
     }
 
     public void skipTrack(final Guild guild) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+        GuildMusicManager musicManager = this.getGuildAudioPlayer(guild);
         musicManager.scheduler.nextTrack();
     }
 
     private synchronized GuildMusicManager getGuildAudioPlayer(final Guild guild) {
         long guildId = guild.getIdLong();
-        GuildMusicManager musicManager = musicManagers.get(guildId);
+        GuildMusicManager musicManager = this.musicManagers.get(guildId);
 
         if (musicManager == null) {
             musicManager = new GuildMusicManager(this.playerManager);
-            musicManagers.put(guildId, musicManager);
+            this.musicManagers.put(guildId, musicManager);
         }
 
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
@@ -108,13 +108,13 @@ public class PlayerManager {
     public void loadAndPlay(final TextChannel textChannel, final String trackUrl) {
         GuildMusicManager musicManager = this.getGuildAudioPlayer(textChannel.getGuild());
 
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+        this.playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 try {
                     musicManager.scheduler.queue(track);
                 } catch (QueueToBigException e) {
-                    e.printStackTrace();
+                    textChannel.sendMessage("I'm sorry the maximum queue size has been reached").queue();
                 }
             }
 
@@ -129,14 +129,16 @@ public class PlayerManager {
                 try {
                     musicManager.scheduler.queue(firstTrack);
                 } catch (QueueToBigException e) {
-                    e.printStackTrace();
+                    textChannel.sendMessage("I'm sorry the maximum queue size has been reached").queue();
+                    return;
                 }
 
                 for (AudioTrack audioTrack : playlist.getTracks()) {
                     try {
                         musicManager.scheduler.queue(audioTrack);
                     } catch (QueueToBigException e) {
-                        e.printStackTrace();
+                        textChannel.sendMessage("I'm sorry the maximum queue size has been reached").queue();
+                        return;
                     }
                 }
             }
@@ -144,11 +146,13 @@ public class PlayerManager {
             @Override
             public void noMatches() {
                 // Notify the user that we've got nothing
+                textChannel.sendMessage("Hmmmm. 404 not found? We couldn't find any matches.").queue();
             }
 
             @Override
             public void loadFailed(FriendlyException throwable) {
                 // Notify the user that everything exploded
+                textChannel.sendMessage("Oops. Something went wrong whilst loading that track.").queue();
             }
         });
     }
