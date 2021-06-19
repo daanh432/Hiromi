@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromi.commands.other.LoadCommand;
 import nl.daanh.hiromi.commands.other.PingCommand;
 import nl.daanh.hiromi.commands.other.SettingsCommand;
+import nl.daanh.hiromi.commands.other.StatusCommand;
 import nl.daanh.hiromi.models.commandcontext.*;
 import nl.daanh.hiromi.models.commands.IBaseCommand;
 import nl.daanh.hiromi.models.commands.ICommand;
@@ -33,6 +34,7 @@ public class CommandManager {
         addCommand(new PingCommand());
         addCommand(new LoadCommand(this));
         addCommand(new SettingsCommand());
+        addCommand(new StatusCommand());
     }
 
     private void addCommand(IBaseCommand command) {
