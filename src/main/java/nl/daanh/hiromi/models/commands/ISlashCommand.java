@@ -1,6 +1,5 @@
 package nl.daanh.hiromi.models.commands;
 
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import nl.daanh.hiromi.models.commandcontext.IButtonCommandContext;
 import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;

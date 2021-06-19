@@ -2,7 +2,6 @@ package nl.daanh.hiromi.database.disk;
 
 import net.dv8tion.jda.api.entities.Guild;
 import nl.daanh.hiromi.database.IDatabaseManager;
-import nl.daanh.hiromi.exceptions.NotImplementedException;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

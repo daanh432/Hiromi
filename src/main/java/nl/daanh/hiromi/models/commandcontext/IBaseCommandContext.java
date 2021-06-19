@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import nl.daanh.hiromi.database.IDatabaseManager;
 import nl.daanh.hiromi.lavaplayer.GuildMusicManager;
 import nl.daanh.hiromi.models.configuration.IConfiguration;
 
