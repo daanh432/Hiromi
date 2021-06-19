@@ -1,0 +1,14 @@
+currency system:
+- src/main/java/nl/daanh/commands/fun/*
+
+emoji system:
+- src/main/java/nl/daanh/commands/emoji/*
+
+leveling system:
+- src/main/java/nl/daanh/commands/leveling/*
+
+music system:
+- src/main/java/nl/daanh/commands/music/*
+
+personality system:
+- src/main/java/nl/daanh/commands/personality/*
