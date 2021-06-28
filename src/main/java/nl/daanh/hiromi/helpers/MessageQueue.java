@@ -15,7 +15,8 @@ import java.util.UUID;
 
 public class MessageQueue extends BaseQueue {
     protected static final Logger LOGGER = LoggerFactory.getLogger(MessageQueue.class);
-    protected final String QUEUE_NAME = "messages";
+    protected final String EXCHANGE_NAME = "discord.messages";
+    protected final String QUEUE_NAME = "";
     protected final String REPLY_QUEUE_NAME = "messages-reply";
 
     public MessageQueue() {
@@ -41,7 +42,7 @@ public class MessageQueue extends BaseQueue {
         if (!channel.isOpen()) connect();
 
         try {
-            channel.basicPublish("", QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
+            channel.basicPublish(EXCHANGE_NAME, QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new HiromiQueueIOException(e.getMessage(), e);
         }
@@ -59,7 +60,7 @@ public class MessageQueue extends BaseQueue {
                     .replyTo(REPLY_QUEUE_NAME)
                     .build();
 
-            channel.basicPublish("", QUEUE_NAME, props, guildMessageToByte(event));
+            channel.basicPublish(EXCHANGE_NAME, QUEUE_NAME, props, guildMessageToByte(event));
 
             channel.basicConsume(REPLY_QUEUE_NAME, true, (consumerTag, delivery) -> {
                 callback.handle(consumerTag, delivery);

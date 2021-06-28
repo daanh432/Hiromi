@@ -1,7 +1,7 @@
 package nl.daanh.hiromi.listeners;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import net.dv8tion.jda.api.entities.Guild;
+import com.rabbitmq.client.Delivery;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -39,25 +39,24 @@ public class GuildMessageListener extends ListenerAdapter {
         }
     }
 
+    private void rpcCallback(GuildMessageReceivedEvent event, String consumerTag, Delivery delivery) {
+        try {
+            Response response = Response.parseFrom(delivery.getBody());
+
+            final TextChannel channel = event.getJDA().getShardManager().getTextChannelById(response.getChannelId());
+            if (channel != null && channel.canTalk()) {
+                channel.sendMessage(response.getResponseMessage()).queue();
+            }
+        } catch (InvalidProtocolBufferException ignore) {
+            // ignore
+        }
+    }
+
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
         MessageQueue messageQueue = messageQueues[event.getJDA().getShardInfo().getShardId()];
-        messageQueue.callRPC(event, (consumerTag, delivery) -> {
-            try {
-                Response response = Response.parseFrom(delivery.getBody());
-
-                final Guild guild = event.getJDA().getGuildById(response.getGuildId());
-                if (guild != null) {
-                    final TextChannel channel = guild.getTextChannelById(response.getChannelId());
-                    if (channel != null) {
-                        channel.sendMessage(response.getResponseMessage()).queue();
-                    }
-                }
-            } catch (InvalidProtocolBufferException ignore) {
-                // ignore
-            }
-        });
+        messageQueue.callRPC(event, (consumerTag, delivery) -> this.rpcCallback(event, consumerTag, delivery));
 
         final String prefix = this.configuration.getDatabaseManager().getPrefix(event.getGuild()) != null ? this.configuration.getDatabaseManager().getPrefix(event.getGuild()) : this.configuration.getGlobalPrefix();
         this.commandManager.handle(event, prefix);
