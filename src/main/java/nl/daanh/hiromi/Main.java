@@ -38,6 +38,11 @@ public class Main {
         builder.addEventListeners(new ButtonClickListener(commandManager));
 
         configureMemoryUsage(builder);
+
+        // Force shard count to 1 if self hosted is true
+        if (configuration.getSelfHosted())
+            builder.setShardsTotal(1);
+
         builder.build();
     }
 
