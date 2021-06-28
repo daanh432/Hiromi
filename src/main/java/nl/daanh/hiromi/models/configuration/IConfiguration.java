@@ -20,4 +20,12 @@ public interface IConfiguration {
     int getShardCount();
 
     IDatabaseManager getDatabaseManager();
+
+    String getRabbitHost();
+
+    String getRabbitVirtualHost();
+
+    String getRabbitUsername();
+
+    String getRabbitPassword();
 }

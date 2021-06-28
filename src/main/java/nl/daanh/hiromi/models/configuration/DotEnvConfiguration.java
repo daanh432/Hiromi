@@ -115,4 +115,24 @@ public class DotEnvConfiguration implements IConfiguration {
     public int getShardCount() {
         return Integer.parseInt(this.getEnv("SHARD_COUNT", "1"));
     }
+
+    @Override
+    public String getRabbitHost() {
+        return getEnv("RABBIT_HOST", "localhost");
+    }
+
+    @Override
+    public String getRabbitVirtualHost() {
+        return getEnv("RABBIT_VIRTUAL_HOST", "/");
+    }
+
+    @Override
+    public String getRabbitUsername() {
+        return getEnv("RABBIT_USERNAME", "guest");
+    }
+
+    @Override
+    public String getRabbitPassword() {
+        return getEnv("RABBIT_PASSWORD", "guest");
+    }
 }

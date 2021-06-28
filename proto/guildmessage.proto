@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package nl.daanh.hiromi.models.proto;
+
+option java_multiple_files = true;
+option java_package = "nl.daanh.hiromi.models.proto";
+option java_outer_classname = "GuildMessage";
+
+message Message {
+  optional string username = 1;
+  optional string guild_id = 2;
+  optional string channel_id = 3;
+  optional string user_id = 4;
+  optional string message = 5;
+}
+
+message Response {
+  optional string username = 1;
+  optional string guild_id = 2;
+  optional string channel_id = 3;
+  optional string user_id = 4;
+  optional string response_message = 5;
+}

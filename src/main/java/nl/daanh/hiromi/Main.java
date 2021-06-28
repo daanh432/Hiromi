@@ -58,4 +58,8 @@ public class Main {
         // Large guilds will only provide online members in their setup and thus reduce bandwidth if chunking is disabled.
         builder.setLargeThreshold(50);
     }
+
+    public static IConfiguration getConfiguration() {
+        return configuration;
+    }
 }
