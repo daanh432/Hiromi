@@ -10,54 +10,70 @@ public final class GuildMessage {
   }
 
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
+          com.google.protobuf.ExtensionRegistry registry) {
     registerAllExtensions(
-        (com.google.protobuf.ExtensionRegistryLite) registry);
+            (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_nl_daanh_hiromi_models_proto_Message_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_nl_daanh_hiromi_models_proto_Message_fieldAccessorTable;
+          internal_static_nl_daanh_hiromi_models_proto_Message_descriptor;
+  static final
+  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internal_static_nl_daanh_hiromi_models_proto_Message_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_nl_daanh_hiromi_models_proto_Response_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_nl_daanh_hiromi_models_proto_Response_fieldAccessorTable;
+          internal_static_nl_daanh_hiromi_models_proto_Message_Mention_descriptor;
+  static final
+  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internal_static_nl_daanh_hiromi_models_proto_Message_Mention_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+          internal_static_nl_daanh_hiromi_models_proto_Response_descriptor;
+  static final
+  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internal_static_nl_daanh_hiromi_models_proto_Response_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
+  getDescriptor() {
     return descriptor;
   }
-  private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
+
+  private static final com.google.protobuf.Descriptors.FileDescriptor
+          descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\022guildmessage.proto\022\034nl.daanh.hiromi.mo" +
-      "dels.proto\"c\n\007Message\022\020\n\010username\030\001 \001(\t\022" +
-      "\020\n\010guild_id\030\002 \001(\t\022\022\n\nchannel_id\030\003 \001(\t\022\017\n" +
-      "\007user_id\030\004 \001(\t\022\017\n\007message\030\005 \001(\t\"m\n\010Respo" +
-      "nse\022\020\n\010username\030\001 \001(\t\022\020\n\010guild_id\030\002 \001(\t\022" +
-      "\022\n\nchannel_id\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\t\022\030\n\020" +
-      "response_message\030\005 \001(\tB.\n\034nl.daanh.hirom" +
-      "i.models.protoB\014GuildMessageP\001"
+            "\n\022guildmessage.proto\022\034nl.daanh.hiromi.mo" +
+                    "dels.proto\"\322\001\n\007Message\022\020\n\010username\030\001 \001(\t" +
+                    "\022\020\n\010guild_id\030\002 \001(\t\022\022\n\nchannel_id\030\003 \001(\t\022\017" +
+                    "\n\007user_id\030\004 \001(\t\022\017\n\007message\030\005 \001(\t\022?\n\010ment" +
+                    "ions\030\006 \003(\0132-.nl.daanh.hiromi.models.prot" +
+                    "o.Message.Mention\032,\n\007Mention\022\020\n\010username" +
+                    "\030\001 \001(\t\022\017\n\007user_id\030\002 \001(\t\"m\n\010Response\022\020\n\010u" +
+                    "sername\030\001 \001(\t\022\020\n\010guild_id\030\002 \001(\t\022\022\n\nchann" +
+                    "el_id\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\t\022\030\n\020response" +
+                    "_message\030\005 \001(\tB.\n\034nl.daanh.hiromi.models" +
+                    ".protoB\014GuildMessageP\001"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        });
+            .internalBuildGeneratedFileFrom(descriptorData,
+                    new com.google.protobuf.Descriptors.FileDescriptor[]{
+                    });
     internal_static_nl_daanh_hiromi_models_proto_Message_descriptor =
-      getDescriptor().getMessageTypes().get(0);
+            getDescriptor().getMessageTypes().get(0);
     internal_static_nl_daanh_hiromi_models_proto_Message_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_nl_daanh_hiromi_models_proto_Message_descriptor,
-        new java.lang.String[] { "Username", "GuildId", "ChannelId", "UserId", "Message", });
+            com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_nl_daanh_hiromi_models_proto_Message_descriptor,
+            new java.lang.String[]{"Username", "GuildId", "ChannelId", "UserId", "Message", "Mentions",});
+    internal_static_nl_daanh_hiromi_models_proto_Message_Mention_descriptor =
+            internal_static_nl_daanh_hiromi_models_proto_Message_descriptor.getNestedTypes().get(0);
+    internal_static_nl_daanh_hiromi_models_proto_Message_Mention_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_nl_daanh_hiromi_models_proto_Message_Mention_descriptor,
+            new java.lang.String[]{"Username", "UserId",});
     internal_static_nl_daanh_hiromi_models_proto_Response_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+            getDescriptor().getMessageTypes().get(1);
     internal_static_nl_daanh_hiromi_models_proto_Response_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_nl_daanh_hiromi_models_proto_Response_descriptor,
-        new java.lang.String[] { "Username", "GuildId", "ChannelId", "UserId", "ResponseMessage", });
+            com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_nl_daanh_hiromi_models_proto_Response_descriptor,
+            new java.lang.String[]{"Username", "GuildId", "ChannelId", "UserId", "ResponseMessage",});
   }
 
   // @@protoc_insertion_point(outer_class_scope)

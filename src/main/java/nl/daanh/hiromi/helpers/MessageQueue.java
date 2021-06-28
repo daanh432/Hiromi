@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class MessageQueue extends BaseQueue {
     protected static final Logger LOGGER = LoggerFactory.getLogger(MessageQueue.class);
@@ -27,12 +29,21 @@ public class MessageQueue extends BaseQueue {
     private byte[] guildMessageToByte(GuildMessageReceivedEvent event) {
         if (event.getMember() == null) throw new RuntimeException("Member is null somehow");
 
+        final List<Message.Mention> mentionedMembers = event.getMessage().getMentionedMembers()
+                .stream()
+                .map(member -> Message.Mention.newBuilder()
+                        .setUserId(member.getId())
+                        .setUsername(member.getEffectiveName())
+                        .build())
+                .collect(Collectors.toList());
+
         final Message message = Message.newBuilder()
                 .setMessage(event.getMessage().getContentRaw())
                 .setUsername(event.getMember().getEffectiveName())
                 .setUserId(event.getMember().getId())
                 .setChannelId(event.getChannel().getId())
                 .setGuildId(event.getGuild().getId())
+                .addAllMentions(mentionedMembers)
                 .build();
 
         return message.toByteArray();

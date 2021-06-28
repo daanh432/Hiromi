@@ -450,8 +450,7 @@ private static final long serialVersionUID = 0L;
       if (!getResponseMessage()
           .equals(other.getResponseMessage())) return false;
     }
-    if (!unknownFields.equals(other.unknownFields)) return false;
-    return true;
+    return unknownFields.equals(other.unknownFields);
   }
 
   @java.lang.Override

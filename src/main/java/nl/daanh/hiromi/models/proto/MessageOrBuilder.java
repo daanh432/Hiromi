@@ -85,10 +85,40 @@ public interface MessageOrBuilder extends
    * @return The message.
    */
   java.lang.String getMessage();
-  /**
-   * <code>optional string message = 5;</code>
-   * @return The bytes for message.
-   */
-  com.google.protobuf.ByteString
-      getMessageBytes();
+
+    /**
+     * <code>optional string message = 5;</code>
+     *
+     * @return The bytes for message.
+     */
+    com.google.protobuf.ByteString
+    getMessageBytes();
+
+    /**
+     * <code>repeated .nl.daanh.hiromi.models.proto.Message.Mention mentions = 6;</code>
+     */
+    java.util.List<nl.daanh.hiromi.models.proto.Message.Mention>
+    getMentionsList();
+
+    /**
+     * <code>repeated .nl.daanh.hiromi.models.proto.Message.Mention mentions = 6;</code>
+     */
+    nl.daanh.hiromi.models.proto.Message.Mention getMentions(int index);
+
+    /**
+     * <code>repeated .nl.daanh.hiromi.models.proto.Message.Mention mentions = 6;</code>
+     */
+    int getMentionsCount();
+
+    /**
+     * <code>repeated .nl.daanh.hiromi.models.proto.Message.Mention mentions = 6;</code>
+     */
+    java.util.List<? extends nl.daanh.hiromi.models.proto.Message.MentionOrBuilder>
+    getMentionsOrBuilderList();
+
+    /**
+     * <code>repeated .nl.daanh.hiromi.models.proto.Message.Mention mentions = 6;</code>
+     */
+    nl.daanh.hiromi.models.proto.Message.MentionOrBuilder getMentionsOrBuilder(
+            int index);
 }

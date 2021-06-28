@@ -12,6 +12,13 @@ message Message {
   optional string channel_id = 3;
   optional string user_id = 4;
   optional string message = 5;
+
+  repeated Mention mentions = 6;
+
+  message Mention {
+    optional string username = 1;
+    optional string user_id = 2;
+  }
 }
 
 message Response {
