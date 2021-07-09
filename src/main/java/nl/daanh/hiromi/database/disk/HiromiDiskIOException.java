@@ -1,6 +1,8 @@
 package nl.daanh.hiromi.database.disk;
 
-public class HiromiDiskIOException extends RuntimeException {
+import nl.daanh.hiromi.database.HiromiDatabaseException;
+
+public class HiromiDiskIOException extends HiromiDatabaseException {
     public HiromiDiskIOException() {
         super();
     }

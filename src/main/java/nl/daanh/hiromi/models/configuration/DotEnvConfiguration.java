@@ -2,8 +2,10 @@ package nl.daanh.hiromi.models.configuration;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import nl.daanh.hiromi.database.IDatabaseManager;
+import nl.daanh.hiromi.database.api.HiromiApiDataSource;
 import nl.daanh.hiromi.database.disk.HiromiDiskDataSource;
 import nl.daanh.hiromi.exceptions.NotImplementedException;
+import nl.daanh.hiromi.helpers.WebUtils;
 
 import java.util.Map;
 
@@ -14,15 +16,15 @@ public class DotEnvConfiguration implements IConfiguration {
 
     public DotEnvConfiguration() {
         String implementationVersion = this.getClass().getPackage().getImplementationVersion();
-//        WebUtils.setUserAgent(String.format("Hiromi/%s", implementationVersion != null ? implementationVersion : "DEVELOPMENT"));
-//        WebUtils.setHiromiApiToken(this.getEnv("HIRMOIAPI_TOKEN", ""));
+        WebUtils.setUserAgent(String.format("Hiromi/%s", implementationVersion != null ? implementationVersion : "DEVELOPMENT"));
+        WebUtils.setApiToken(this.getEnv("API_TOKEN", ""));
 
         switch (this.getEnv("DATA_SOURCE", "disk").toLowerCase()) {
             case "api":
             case "hirmoi_api":
             case "hiromiapi":
             case "hiromi":
-                throw new NotImplementedException("Hiromi API data source has not been implemented yet");
+                this.databaseManager = new HiromiApiDataSource();
             case "mysql":
             case "mariadb":
             case "maria":
@@ -34,9 +36,13 @@ public class DotEnvConfiguration implements IConfiguration {
             case "mongodb":
             case "mongo":
                 throw new NotImplementedException("MongoDB data source has not been implemented yet");
-            default:
+            case "disk":
+            case "dsk":
+            case "dik":
                 this.databaseManager = new HiromiDiskDataSource();
                 break;
+            default:
+                throw new NotImplementedException("Unknown data source has not ben implemented yet");
         }
     }
 

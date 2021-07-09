@@ -1,8 +1,10 @@
 package nl.daanh.hiromi.database.disk;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import nl.daanh.hiromi.database.IDatabaseManager;
-import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
+import nl.daanh.hiromi.exceptions.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,11 +13,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class HiromiDiskDataSource implements IDatabaseManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(HiromiDiskDataSource.class);
@@ -24,18 +23,6 @@ public class HiromiDiskDataSource implements IDatabaseManager {
 
     private File getGuildFile(Guild guild) {
         return new File("./guildConfigs/" + guild.getIdLong() + "/config.properties");
-    }
-
-    private String getDefaultSetting(String key) {
-        // If value has not been found on the online api or in the cache return the default value
-        switch (key) {
-            case "prefix":
-                return "hi!";
-            case "categories":
-                return "0";
-            default:
-                return String.format("NO_DEFAULT_VALUE_FOR_%s", key.toUpperCase());
-        }
     }
 
     private Properties fetchSettings(Guild guild) {
@@ -63,7 +50,8 @@ public class HiromiDiskDataSource implements IDatabaseManager {
         }
     }
 
-    private String getKey(Guild guild, String key) {
+    @Override
+    public String getKey(Guild guild, String key) {
         Properties setting = this.fetchSettings(guild);
         if (setting.containsKey(key)) {
             return setting.getProperty(key);
@@ -72,7 +60,8 @@ public class HiromiDiskDataSource implements IDatabaseManager {
         return this.getDefaultSetting(key);
     }
 
-    private void writeKey(Guild guild, String key, String value) {
+    @Override
+    public void writeKey(Guild guild, String key, String value) {
         try {
             Properties properties = this.fetchSettings(guild);
             properties.setProperty(key, value);
@@ -91,39 +80,22 @@ public class HiromiDiskDataSource implements IDatabaseManager {
     }
 
     @Override
-    public String getPrefix(Guild guild) {
-        return this.getKey(guild, "prefix");
+    public String getKey(Member member, String key) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void setPrefix(Guild guild, String prefix) {
-        this.writeKey(guild, "prefix", prefix);
+    public String getKey(User user, String key) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public List<CommandCategory.CATEGORY> getEnabledCategories(Guild guild) {
-        String categories = this.getKey(guild, "categories");
-        int guildCategories = Integer.parseInt(categories);
-        return Arrays.stream(CommandCategory.CATEGORY.values()).filter(category -> (guildCategories & category.getMask()) == category.getMask()).collect(Collectors.toList());
+    public void writeKey(Member member, String key, String value) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public boolean getCategoryEnabled(Guild guild, CommandCategory.CATEGORY category) {
-        String categories = this.getKey(guild, "categories");
-        int guildCategories = Integer.parseInt(categories);
-        return (guildCategories & category.getMask()) == category.getMask();
-    }
-
-    @Override
-    public void setCategoryEnabled(Guild guild, CommandCategory.CATEGORY category, boolean enabled) {
-        String categories = this.getKey(guild, "categories");
-        int guildCategories = Integer.parseInt(categories);
-
-        if (enabled)
-            guildCategories = guildCategories | category.getMask();
-        else if (getCategoryEnabled(guild, category))
-            guildCategories = guildCategories ^ category.getMask();
-
-        this.writeKey(guild, "categories", String.valueOf(guildCategories));
+    public void writeKey(User user, String key, String value) {
+        throw new NotImplementedException();
     }
 }
