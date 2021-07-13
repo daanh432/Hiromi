@@ -26,6 +26,8 @@ public class ButtonClickListener extends ListenerAdapter {
         if (!authorId.equals(event.getUser().getId()))
             return;
 
+        event.deferEdit().queue(); // acknowledge the button was clicked, otherwise the interaction will fail
+
         this.commandManager.handle(event, data);
     }
 }

@@ -1,3 +1,12 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ### Prerequisites **(to be completed in more detail)**
 
 * [ ] Are you reporting to the correct repository?

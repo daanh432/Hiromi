@@ -3,6 +3,7 @@ package nl.daanh.hiromi;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import nl.daanh.hiromi.commands.other.LoadCommand;
 import nl.daanh.hiromi.commands.other.PingCommand;
 import nl.daanh.hiromi.commands.other.SettingsCommand;
@@ -38,6 +39,15 @@ public class CommandManager {
     }
 
     private void addCommand(IBaseCommand command) {
+        CommandCategory commandCategory = command.getClass().getAnnotation(CommandCategory.class);
+        if (commandCategory == null)
+            throw new RuntimeException("Command category is required.");
+        if (command.getClass().getAnnotationsByType(SelfPermission.class).length == 0)
+            throw new RuntimeException("Command self permissions are required.");
+
+        if (commandCategory.value() == CommandCategory.CATEGORY.MUSIC && !configuration.getMusicEnabled())
+            return;
+
         if (command instanceof ICommand)
             this.addGuildCommand((ICommand) command);
 
@@ -46,10 +56,6 @@ public class CommandManager {
     }
 
     private void addGuildCommand(ICommand command) {
-        if (command.getClass().getAnnotation(CommandCategory.class) == null)
-            throw new RuntimeException("Command category is required.");
-        if (command.getClass().getAnnotationsByType(SelfPermission.class).length == 0)
-            throw new RuntimeException("Command self permissions are required.");
         if (command.getClass().getAnnotationsByType(CommandInvoke.class).length == 0)
             throw new RuntimeException("Command invoke(s) are required.");
 
@@ -62,11 +68,6 @@ public class CommandManager {
     }
 
     private void addSlashCommand(ISlashCommand command) {
-        if (command.getClass().getAnnotation(CommandCategory.class) == null)
-            throw new RuntimeException("Command category is required.");
-        if (command.getClass().getAnnotationsByType(SelfPermission.class).length == 0)
-            throw new RuntimeException("Command self permissions are required.");
-
         if (this.slashCommands.containsKey(command.getInvoke())) {
             throw new RuntimeException("Invoke has already been defined!");
         }
