@@ -27,6 +27,7 @@ public interface IDatabaseManager {
             case "cash":
                 return "0";
             case "birthdate":
+            case "timezone":
                 return null;
             default:
                 throw new RuntimeException("No default value for " + key.toUpperCase());
@@ -109,5 +110,10 @@ public interface IDatabaseManager {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    @Nullable
+    default String getTimezone(User user) {
+        return this.getKey(user, "timezone");
     }
 }
