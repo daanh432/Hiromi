@@ -5,27 +5,41 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 
+import javax.annotation.Nullable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public interface IDatabaseManager {
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    @Nullable
     default String getDefaultSetting(String key) {
         // If value has not been found on the online api or in the cache return the default value
         switch (key) {
             case "prefix":
                 return "hi!";
             case "categories":
+            case "bank":
+            case "cash":
                 return "0";
+            case "birthdate":
+                return null;
             default:
-                return String.format("NO_DEFAULT_VALUE_FOR_%s", key.toUpperCase());
+                throw new RuntimeException("No default value for " + key.toUpperCase());
         }
     }
 
+    @Nullable
     String getKey(Guild guild, String key);
 
+    @Nullable
     String getKey(Member member, String key);
 
+    @Nullable
     String getKey(User user, String key);
 
     void writeKey(Guild guild, String key, String value);
@@ -64,5 +78,36 @@ public interface IDatabaseManager {
             guildCategories = guildCategories ^ category.getMask();
 
         writeKey(guild, "categories", String.valueOf(guildCategories));
+    }
+
+    default int getBankAmount(Member member) {
+        String bankAmount = this.getKey(member, "bank");
+        try {
+            return Integer.parseInt(bankAmount);
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
+    }
+
+    default int getCashAmount(Member member) {
+        String cashAmount = this.getKey(member, "cash");
+        try {
+            return Integer.parseInt(cashAmount);
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
+    }
+
+    @Nullable
+    default Date getBirthdate(User user) {
+        String birthdate = this.getKey(user, "birthdate");
+
+        if (birthdate == null) return null;
+
+        try {
+            return dateFormatter.parse(birthdate);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 }

@@ -18,16 +18,16 @@ public class WebUtils {
                 .header("Authorization", apiToken);
     }
 
-    public static void getJsonFromUrl(String url, Callback callback) throws IOException {
-        Request request = new Request.Builder()
+    public static void apiGetJsonFromUrl(String url, Callback callback) throws IOException {
+        Request request = apiRequest()
                 .url(url)
                 .build();
 
         client.newCall(request).enqueue(callback);
     }
 
-    public static void postToUrl(String url, RequestBody body, Callback callback) throws IOException {
-        Request request = new Request.Builder()
+    public static void apiPostToUrl(String url, RequestBody body, Callback callback) throws IOException {
+        Request request = apiRequest()
                 .url(url)
                 .post(body)
                 .build();

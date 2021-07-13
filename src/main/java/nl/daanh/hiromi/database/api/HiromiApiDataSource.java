@@ -11,6 +11,7 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
 
     private void load(String url, HashMap<Long, Pair<Instant, JSONObject>> cache, long cacheKey) {
         try {
-            WebUtils.getJsonFromUrl(url, new Callback() {
+            WebUtils.apiGetJsonFromUrl(url, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     // ignore
@@ -34,7 +35,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     if (response.isSuccessful() && response.body() != null) {
                         JSONObject json = new JSONObject(response.body().string());
-                        cache.put(cacheKey, Pair.of(Instant.now(), json));
+                        cache.put(cacheKey, Pair.of(Instant.now(), json.getJSONObject("data")));
                     } else {
                         throw new IOException("Response did not contain valid data");
                     }
@@ -51,7 +52,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
                     .add("value", value)
                     .build();
 
-            WebUtils.postToUrl(url + key, body, new Callback() {
+            WebUtils.apiPostToUrl(url + key, body, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     // ignore
@@ -72,6 +73,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
         }
     }
 
+    @Nullable
     private String getKey(HashMap<Long, Pair<Instant, JSONObject>> cache, long cacheKey, String key) {
         final Pair<Instant, JSONObject> cached = cache.get(cacheKey);
         if (cached != null) {
@@ -89,7 +91,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
         if (cached != null && cached.getLeft().isAfter(Instant.now().minusSeconds(EXPIRE_IN)))
             return;
 
-        load(endpoint + "/bot/guilds/" + guild.getId(), guildCache, guild.getIdLong());
+        load(endpoint + "/api/bot/guilds/" + guild.getId(), guildCache, guild.getIdLong());
     }
 
     private void load(Member member) {
@@ -97,7 +99,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
         if (cached != null && cached.getLeft().isAfter(Instant.now().minusSeconds(EXPIRE_IN)))
             return;
 
-        load(endpoint + "/bot/guilds/" + member.getGuild().getId() + "/members", memberCache, member.getGuild().getIdLong());
+        load(endpoint + "/api/bot/guilds/" + member.getGuild().getId() + "/members", memberCache, member.getGuild().getIdLong());
     }
 
     private void load(User user) {
@@ -105,22 +107,25 @@ public class HiromiApiDataSource implements IDatabaseManager {
         if (cached != null && cached.getLeft().isAfter(Instant.now().minusSeconds(EXPIRE_IN)))
             return;
 
-        load(endpoint + "/bot/users/" + user.getId(), userCache, user.getIdLong());
+        load(endpoint + "/api/bot/users/" + user.getId(), userCache, user.getIdLong());
     }
 
     @Override
+    @Nullable
     public String getKey(Guild guild, String key) {
         load(guild);
         return getKey(guildCache, guild.getIdLong(), key);
     }
 
     @Override
+    @Nullable
     public String getKey(Member member, String key) {
         load(member);
         return getKey(memberCache, member.getIdLong(), key);
     }
 
     @Override
+    @Nullable
     public String getKey(User user, String key) {
         load(user);
         return getKey(userCache, user.getIdLong(), key);
@@ -128,16 +133,16 @@ public class HiromiApiDataSource implements IDatabaseManager {
 
     @Override
     public void writeKey(Guild guild, String key, String value) {
-        writeKey(endpoint + "/bot/guilds/" + guild.getId() + "/", guildCache, guild.getIdLong(), key, value);
+        writeKey(endpoint + "/api/bot/guilds/" + guild.getId() + "/", guildCache, guild.getIdLong(), key, value);
     }
 
     @Override
     public void writeKey(Member member, String key, String value) {
-        writeKey(endpoint + "/bot/guilds/" + member.getGuild().getId() + "/members/" + member.getId() + "/", memberCache, member.getGuild().getIdLong(), key, value);
+        writeKey(endpoint + "/api/bot/guilds/" + member.getGuild().getId() + "/members/" + member.getId() + "/", memberCache, member.getGuild().getIdLong(), key, value);
     }
 
     @Override
     public void writeKey(User user, String key, String value) {
-        writeKey(endpoint + "/bot/users/" + user.getId() + "/", userCache, user.getIdLong(), key, value);
+        writeKey(endpoint + "/api/bot/users/" + user.getId() + "/", userCache, user.getIdLong(), key, value);
     }
 }

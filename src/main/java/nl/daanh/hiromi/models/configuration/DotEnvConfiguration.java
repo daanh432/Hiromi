@@ -25,6 +25,7 @@ public class DotEnvConfiguration implements IConfiguration {
             case "hiromiapi":
             case "hiromi":
                 this.databaseManager = new HiromiApiDataSource();
+                break;
             case "mysql":
             case "mariadb":
             case "maria":
