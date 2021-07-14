@@ -19,12 +19,4 @@ public class MessageFormatting {
     public static String dateTimeFormat(Instant instant, ZoneId zoneId) {
         return ZonedDateTime.ofInstant(instant, zoneId).format(IDatabaseManager.dateTimeFormatter);
     }
-
-    public static String currentTimeFormatted(ZoneId zoneId) {
-        return timeFormat(Instant.now(), zoneId);
-    }
-
-    public static String timeFormat(Instant instant, ZoneId zoneId) {
-        return ZonedDateTime.ofInstant(instant, zoneId).format(IDatabaseManager.timeFormatter);
-    }
 }
