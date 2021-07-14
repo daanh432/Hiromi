@@ -3,7 +3,7 @@ package nl.daanh.hiromi;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import nl.daanh.hiromi.commands.currency.BankCommand;
 import nl.daanh.hiromi.commands.other.LoadCommand;
 import nl.daanh.hiromi.commands.other.PingCommand;
 import nl.daanh.hiromi.commands.other.SettingsCommand;
@@ -36,6 +36,7 @@ public class CommandManager {
         addCommand(new LoadCommand(this));
         addCommand(new SettingsCommand());
         addCommand(new StatusCommand());
+        addCommand(new BankCommand());
     }
 
     private void addCommand(IBaseCommand command) {
