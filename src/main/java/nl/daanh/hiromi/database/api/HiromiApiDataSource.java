@@ -94,7 +94,8 @@ public class HiromiApiDataSource implements IDatabaseManager {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     if (response.isSuccessful() && response.body() != null) {
                         final Pair<Instant, JSONObject> cached = cache.get(cacheKey);
-                        cached.getRight().getJSONObject("settings").put(key, value);
+                        if (cached != null)
+                            cached.getRight().getJSONObject("settings").put(key, value);
                     } else {
                         throw new IOException("Response did not contain valid data");
                     }
@@ -166,7 +167,7 @@ public class HiromiApiDataSource implements IDatabaseManager {
         if (cached != null && cached.getLeft().isAfter(Instant.now().minusSeconds(EXPIRE_IN)))
             return;
 
-        load(endpoint + "/api/bot/users/" + user.getId(), userCache, user.getIdLong());
+        load(endpoint + "/api/bot/members/" + user.getId(), userCache, user.getIdLong());
     }
 
     @Override
@@ -211,6 +212,6 @@ public class HiromiApiDataSource implements IDatabaseManager {
 
     @Override
     public void writeKey(User user, String key, String value) {
-        writeKey(endpoint + "/api/bot/users/" + user.getId() + "/", userCache, user.getIdLong(), key, value);
+        writeKey(endpoint + "/api/bot/members/" + user.getId() + "/", userCache, user.getIdLong(), key, value);
     }
 }

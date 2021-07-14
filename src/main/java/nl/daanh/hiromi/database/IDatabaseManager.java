@@ -8,6 +8,11 @@ import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +20,8 @@ import java.util.stream.Collectors;
 
 public interface IDatabaseManager {
     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH:mm:ss");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Nullable
     default String getDefaultSetting(String key) {
@@ -131,7 +138,18 @@ public interface IDatabaseManager {
     }
 
     @Nullable
-    default String getTimezone(User user) {
-        return this.getKey(user, "timezone");
+    default ZoneId getTimezone(User user) {
+        String timezone = this.getKey(user, "timezone");
+        if (timezone == null) return null;
+        try {
+            ZoneOffset offset = ZoneOffset.ofTotalSeconds(Integer.parseInt(timezone));
+            return ZoneId.ofOffset("UTC", offset);
+        } catch (DateTimeException | NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    default void setTimezone(User user, ZoneId zoneId) {
+        writeKey(user, "timezone", String.valueOf(zoneId.getRules().getOffset(Instant.now()).getTotalSeconds()));
     }
 }

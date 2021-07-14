@@ -9,6 +9,8 @@ import nl.daanh.hiromi.commands.other.LoadCommand;
 import nl.daanh.hiromi.commands.other.PingCommand;
 import nl.daanh.hiromi.commands.other.SettingsCommand;
 import nl.daanh.hiromi.commands.other.StatusCommand;
+import nl.daanh.hiromi.commands.personality.SetTimezoneCommand;
+import nl.daanh.hiromi.commands.personality.TimezoneCommand;
 import nl.daanh.hiromi.models.commandcontext.*;
 import nl.daanh.hiromi.models.commands.IBaseCommand;
 import nl.daanh.hiromi.models.commands.ICommand;
@@ -42,6 +44,10 @@ public class CommandManager {
         // Currency system
         addCommand(new BankCommand());
         addCommand(new BalanceCommand());
+
+        // Personality system
+        addCommand(new SetTimezoneCommand());
+        addCommand(new TimezoneCommand());
     }
 
     private void addCommand(IBaseCommand command) {
