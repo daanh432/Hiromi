@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import nl.daanh.hiromi.database.IDatabaseManager;
+import nl.daanh.hiromi.helpers.MessageFormatting;
 import nl.daanh.hiromi.models.commandcontext.ICommandContext;
 import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;
 import nl.daanh.hiromi.models.commands.ICommand;
@@ -19,7 +20,7 @@ import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
 import java.util.List;
 
 @CommandInvoke("bank")
-@CommandCategory(CommandCategory.CATEGORY.OTHER)
+@CommandCategory(CommandCategory.CATEGORY.CURRENCY)
 @SelfPermission(Permission.MESSAGE_WRITE)
 public class BankCommand implements ICommand, ISlashCommand {
     @Override
@@ -47,7 +48,11 @@ public class BankCommand implements ICommand, ISlashCommand {
 
                     databaseManager.setBankAmount(member, bankAmount);
                     databaseManager.setCashAmount(member, cashAmount);
-                    ctx.reply(String.format("Withdrawn %s from your bank account. New balance for your wallet: %s, new balance for your bank account: %s", amount, cashAmount, bankAmount)).queue();
+                    ctx.reply(String.format("Withdrawn %s from your bank account. New balance for your wallet: %s, new balance for your bank account: %s",
+                            MessageFormatting.currencyFormat(ctx, amount),
+                            MessageFormatting.currencyFormat(ctx, cashAmount),
+                            MessageFormatting.currencyFormat(ctx, bankAmount)
+                    )).queue();
                     return;
                 } else if (args.get(0).equalsIgnoreCase("put")) {
                     if (amount > cashAmount || amount <= 0) {
@@ -60,7 +65,11 @@ public class BankCommand implements ICommand, ISlashCommand {
 
                     databaseManager.setCashAmount(member, cashAmount);
                     databaseManager.setBankAmount(member, bankAmount);
-                    ctx.reply(String.format("Deposited %s to your bank account. New balance for your bank account: %s, new balance for your wallet: %s", amount, bankAmount, cashAmount)).queue();
+                    ctx.reply(String.format("Deposited %s to your bank account. New balance for your bank account: %s, new balance for your wallet: %s",
+                            MessageFormatting.currencyFormat(ctx, amount),
+                            MessageFormatting.currencyFormat(ctx, bankAmount),
+                            MessageFormatting.currencyFormat(ctx, cashAmount)
+                    )).queue();
                     return;
                 }
 
@@ -100,10 +109,10 @@ public class BankCommand implements ICommand, ISlashCommand {
                 databaseManager.setCashAmount(member, cashAmount);
                 ctx.reply(
                         String.format("Withdrawn %s from your bank account. New balance for your wallet: %s, new balance for your bank account: %s",
-                                amount,
-                                cashAmount,
-                                bankAmount))
-                        .setEphemeral(true).queue();
+                                MessageFormatting.currencyFormat(ctx, amount),
+                                MessageFormatting.currencyFormat(ctx, cashAmount),
+                                MessageFormatting.currencyFormat(ctx, bankAmount)
+                        )).setEphemeral(true).queue();
                 return;
             } else if (putOption != null) {
                 int amount = Integer.parseInt(putOption.getAsString());
@@ -119,10 +128,10 @@ public class BankCommand implements ICommand, ISlashCommand {
                 databaseManager.setBankAmount(member, bankAmount);
                 ctx.reply(
                         String.format("Deposited %s to your bank account. New balance for your bank account: %s, new balance for your wallet: %s",
-                                amount,
-                                bankAmount,
-                                cashAmount))
-                        .setEphemeral(true)
+                                MessageFormatting.currencyFormat(ctx, amount),
+                                MessageFormatting.currencyFormat(ctx, bankAmount),
+                                MessageFormatting.currencyFormat(ctx, cashAmount)
+                        )).setEphemeral(true)
                         .queue();
                 return;
             }

@@ -3,6 +3,7 @@ package nl.daanh.hiromi;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import nl.daanh.hiromi.commands.currency.BalanceCommand;
 import nl.daanh.hiromi.commands.currency.BankCommand;
 import nl.daanh.hiromi.commands.other.LoadCommand;
 import nl.daanh.hiromi.commands.other.PingCommand;
@@ -32,11 +33,15 @@ public class CommandManager {
     public CommandManager(IConfiguration configuration) {
         this.configuration = configuration;
 
+        // Miscellaneous
         addCommand(new PingCommand());
         addCommand(new LoadCommand(this));
         addCommand(new SettingsCommand());
         addCommand(new StatusCommand());
+
+        // Currency system
         addCommand(new BankCommand());
+        addCommand(new BalanceCommand());
     }
 
     private void addCommand(IBaseCommand command) {

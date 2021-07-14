@@ -20,6 +20,8 @@ public interface IDatabaseManager {
     default String getDefaultSetting(String key) {
         // If value has not been found on the online api or in the cache return the default value
         switch (key) {
+            case "currency":
+                return "Ƕ %";
             case "prefix":
                 return "hi!";
             case "categories":
@@ -53,8 +55,16 @@ public interface IDatabaseManager {
         return this.getKey(guild, "prefix");
     }
 
+    default String getCurrency(Guild guild) {
+        return this.getKey(guild, "currency");
+    }
+
     default void setPrefix(Guild guild, String prefix) {
         this.writeKey(guild, "prefix", prefix);
+    }
+
+    default void setCurrency(Guild guild, String currency) {
+        this.writeKey(guild, "currency", currency);
     }
 
     default List<CommandCategory.CATEGORY> getEnabledCategories(Guild guild) {
