@@ -99,6 +99,14 @@ public interface IDatabaseManager {
         }
     }
 
+    default void setBankAmount(Member member, int bankAmount) {
+        writeKey(member, "bank", String.valueOf(bankAmount));
+    }
+
+    default void setCashAmount(Member member, int cashAmount) {
+        writeKey(member, "cash", String.valueOf(cashAmount));
+    }
+
     @Nullable
     default Date getBirthdate(User user) {
         String birthdate = this.getKey(user, "birthdate");

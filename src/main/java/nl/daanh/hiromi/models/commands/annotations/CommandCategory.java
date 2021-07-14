@@ -9,11 +9,12 @@ public @interface CommandCategory {
 
     enum CATEGORY {
         OTHER(1),
-        FUN(2),
+        CURRENCY(2),
         MUSIC(4),
         MODERATION(8),
         PERSONALITY(16),
-        LEVELING(32);
+        LEVELING(32),
+        EMOJI(64);
 
         private final int mask;
 

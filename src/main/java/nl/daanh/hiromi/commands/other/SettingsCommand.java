@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.Button;
 import nl.daanh.hiromi.database.IDatabaseManager;
 import nl.daanh.hiromi.exceptions.HiromiSettingNotFoundException;
+import nl.daanh.hiromi.helpers.ActionRowUtils;
 import nl.daanh.hiromi.models.commandcontext.IButtonCommandContext;
 import nl.daanh.hiromi.models.commandcontext.ICommandContext;
 import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;
@@ -31,7 +32,7 @@ import java.util.List;
 @SelfPermission(Permission.MESSAGE_WRITE)
 @UserPermission(Permission.ADMINISTRATOR)
 public class SettingsCommand implements ICommand, ISlashCommand {
-    private static final List<String> validSettings = Arrays.asList("prefix", "music", "fun", "moderation");
+    private static final List<String> validSettings = Arrays.asList("prefix", "currency", "music", "moderation", "personality", "leveling", "emoji");
 
     @Override
     public void handle(ICommandContext ctx) {
@@ -73,15 +74,24 @@ public class SettingsCommand implements ICommand, ISlashCommand {
             case "prefix":
                 String prefix = databaseManager.getPrefix(guild);
                 return String.format("The prefix is set to ``%s``.", prefix);
+            case "currency":
+                boolean currencyEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY);
+                return String.format("The category ``currency`` is ``%s``.", currencyEnabled ? "enabled" : "disabled");
             case "music":
                 boolean musicEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC);
                 return String.format("The category ``music`` is ``%s``.", musicEnabled ? "enabled" : "disabled");
-            case "fun":
-                boolean funEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.FUN);
-                return String.format("The category ``fun`` is ``%s``.", funEnabled ? "enabled" : "disabled");
             case "moderation":
                 boolean moderationEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.MODERATION);
                 return String.format("The category ``moderation`` is ``%s``.", moderationEnabled ? "enabled" : "disabled");
+            case "personality":
+                boolean personalityEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.PERSONALITY);
+                return String.format("The category ``personality`` is ``%s``.", personalityEnabled ? "enabled" : "disabled");
+            case "leveling":
+                boolean levelingEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.LEVELING);
+                return String.format("The category ``leveling`` is ``%s``.", levelingEnabled ? "enabled" : "disabled");
+            case "emoji":
+                boolean emojiEnabled = databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.EMOJI);
+                return String.format("The category ``emoji`` is ``%s``.", emojiEnabled ? "enabled" : "disabled");
         }
 
         throw new HiromiSettingNotFoundException(String.format("%s is not a valid setting", key));
@@ -102,18 +112,30 @@ public class SettingsCommand implements ICommand, ISlashCommand {
                 String prefix = value.replaceAll("\\s", "");
                 databaseManager.setPrefix(guild, prefix);
                 return String.format("I have set the prefix to ``%s`` for you.", prefix);
+            case "currency":
+                boolean currencyEnabled = this.mapStringToBool(value);
+                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY, currencyEnabled);
+                return String.format("I have ``%s`` the category ``currency`` for you.", currencyEnabled ? "enabled" : "disabled");
             case "music":
                 boolean musicEnabled = this.mapStringToBool(value);
                 databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC, musicEnabled);
                 return String.format("I have ``%s`` the category ``music`` for you.", musicEnabled ? "enabled" : "disabled");
-            case "fun":
-                boolean funEnabled = this.mapStringToBool(value);
-                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.FUN, funEnabled);
-                return String.format("I have ``%s`` the category ``fun`` for you.", funEnabled ? "enabled" : "disabled");
             case "moderation":
                 boolean moderationEnabled = this.mapStringToBool(value);
                 databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.MODERATION, moderationEnabled);
                 return String.format("I have ``%s`` the category ``moderation`` for you.", moderationEnabled ? "enabled" : "disabled");
+            case "personality":
+                boolean personalityEnabled = this.mapStringToBool(value);
+                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.PERSONALITY, personalityEnabled);
+                return String.format("I have ``%s`` the category ``personality`` for you.", personalityEnabled ? "enabled" : "disabled");
+            case "leveling":
+                boolean levelingEnabled = this.mapStringToBool(value);
+                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.LEVELING, levelingEnabled);
+                return String.format("I have ``%s`` the category ``leveling`` for you.", levelingEnabled ? "enabled" : "disabled");
+            case "emoji":
+                boolean emojiEnabled = this.mapStringToBool(value);
+                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.EMOJI, emojiEnabled);
+                return String.format("I have ``%s`` the category ``emoji`` for you.", emojiEnabled ? "enabled" : "disabled");
         }
 
         throw new HiromiSettingNotFoundException(String.format("%s is not a valid setting", key));
@@ -153,11 +175,12 @@ public class SettingsCommand implements ICommand, ISlashCommand {
         OptionMapping valueOption = event.getOption("value");
 
         if (keyOption == null) {
-
+            Button[] buttons = validSettings.stream().map((s -> Button.secondary(userId + ":" + this.getInvoke() + ":view:" + s, s))).toArray(Button[]::new);
             ctx.reply("Please specify the name of the setting you want to view / edit.")
-                    .addActionRow(validSettings.stream().map((s -> Button.secondary(userId + ":" + this.getInvoke() + ":view:" + s, s))).toArray(Button[]::new))
+                    .addActionRows(ActionRowUtils.splitButtons(buttons))
                     .setEphemeral(true)
                     .queue();
+
             return;
         }
 
@@ -206,16 +229,60 @@ public class SettingsCommand implements ICommand, ISlashCommand {
                         .queue();
                 break;
             case "back":
-
+                Button[] buttons = validSettings.stream().map((s -> Button.secondary(userId + ":" + this.getInvoke() + ":view:" + s, s))).toArray(Button[]::new);
                 ctx.reply("Please specify the name of the setting you want to view / edit.")
-                        .setActionRow(
-                                validSettings.stream().map((s -> Button.secondary(userId + ":" + this.getInvoke() + ":view:" + s, s))).toArray(Button[]::new)
-                        )
+                        .setActionRows(ActionRowUtils.splitButtons(buttons))
                         .queue();
                 break;
             case "edit":
                 if (args.size() < 1) return;
-                ctx.reply("To change the value of the settings please use ``/" + this.getInvoke() + " key:" + args.get(0) + " value:<your value>`` for now.")
+
+                switch (args.get(0)) {
+                    case "currency":
+                        boolean currencyEnabled = !databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY);
+                        databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY, currencyEnabled);
+                        ctx.reply(String.format("I have ``%s`` the category ``currency`` for you.", currencyEnabled ? "enabled" : "disabled"))
+                                .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
+                                .queue();
+                        return;
+                    case "music":
+                        boolean musicEnabled = !databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC);
+                        databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC, musicEnabled);
+                        ctx.reply(String.format("I have ``%s`` the category ``music`` for you.", musicEnabled ? "enabled" : "disabled"))
+                                .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
+                                .queue();
+                        return;
+                    case "moderation":
+                        boolean moderationEnabled = !databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.MODERATION);
+                        databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.MODERATION, moderationEnabled);
+                        ctx.reply(String.format("I have ``%s`` the category ``moderation`` for you.", moderationEnabled ? "enabled" : "disabled"))
+                                .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
+                                .queue();
+                        return;
+                    case "personality":
+                        boolean personalityEnabled = !databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.PERSONALITY);
+                        databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.PERSONALITY, personalityEnabled);
+                        ctx.reply(String.format("I have ``%s`` the category ``personality`` for you.", personalityEnabled ? "enabled" : "disabled"))
+                                .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
+                                .queue();
+                        return;
+                    case "leveling":
+                        boolean levelingEnabled = !databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.LEVELING);
+                        databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.LEVELING, levelingEnabled);
+                        ctx.reply(String.format("I have ``%s`` the category ``leveling`` for you.", levelingEnabled ? "enabled" : "disabled"))
+                                .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
+                                .queue();
+                        return;
+                    case "emoji":
+                        boolean emojiEnabled = !databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.EMOJI);
+                        databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.EMOJI, emojiEnabled);
+                        ctx.reply(String.format("I have ``%s`` the category ``emoji`` for you.", emojiEnabled ? "enabled" : "disabled"))
+                                .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
+                                .queue();
+                        return;
+                }
+
+                ctx.reply("To change the value of this setting please use ``/" + this.getInvoke() + " key:" + args.get(0) + " value:<your value>`` for now.")
                         .setActionRow(Button.secondary(userId + ":" + this.getInvoke() + ":back", "Back"))
                         .queue();
                 break;
