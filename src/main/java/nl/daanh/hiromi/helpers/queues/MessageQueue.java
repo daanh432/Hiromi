@@ -1,9 +1,8 @@
-package nl.daanh.hiromi.helpers;
+package nl.daanh.hiromi.helpers.queues;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.DeliverCallback;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromi.helpers.queues.BaseQueue;
 import nl.daanh.hiromi.helpers.queues.exceptions.HiromiQueueIOException;
 import nl.daanh.hiromi.models.proto.Message;
 import org.slf4j.Logger;

@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nl.daanh.hiromi.CommandManager;
-import nl.daanh.hiromi.helpers.MessageQueue;
+import nl.daanh.hiromi.helpers.queues.MessageQueue;
 import nl.daanh.hiromi.models.configuration.IConfiguration;
 import nl.daanh.hiromi.models.proto.Response;
 import org.jetbrains.annotations.NotNull;
