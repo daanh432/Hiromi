@@ -2,7 +2,8 @@ package nl.daanh.hiromi.models.configuration;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import nl.daanh.hiromi.database.IDatabaseManager;
-import nl.daanh.hiromi.database.api.HiromiApiDataSource;
+import nl.daanh.hiromi.database.api.HiromiApiAsyncDataSource;
+import nl.daanh.hiromi.database.api.HiromiApiSyncDataSource;
 import nl.daanh.hiromi.database.disk.HiromiDiskDataSource;
 import nl.daanh.hiromi.exceptions.NotImplementedException;
 import nl.daanh.hiromi.helpers.WebUtils;
@@ -20,11 +21,17 @@ public class DotEnvConfiguration implements IConfiguration {
         WebUtils.setApiToken(this.getEnv("API_TOKEN", ""));
 
         switch (this.getEnv("DATA_SOURCE", "disk").toLowerCase()) {
+            case "apiasync":
+            case "hirmoi_api_async":
+            case "hiromiapiasync":
+            case "hiromiasync":
+                this.databaseManager = new HiromiApiAsyncDataSource();
+                break;
             case "api":
             case "hirmoi_api":
             case "hiromiapi":
             case "hiromi":
-                this.databaseManager = new HiromiApiDataSource();
+                this.databaseManager = new HiromiApiSyncDataSource();
                 break;
             case "mysql":
             case "mariadb":

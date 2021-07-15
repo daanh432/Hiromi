@@ -6,6 +6,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 import java.io.IOException;
+import java.util.concurrent.FutureTask;
 
 public class WebUtils {
     private static final OkHttpClient client = new OkHttpClient();
@@ -16,6 +17,11 @@ public class WebUtils {
         return new Request.Builder()
                 .header("User-Agent", userAgent)
                 .header("Authorization", apiToken);
+    }
+
+    public static FutureTask<Object> getFutureTask() {
+        return new FutureTask<>(() -> {
+        }, new Object());
     }
 
     public static void apiGetJsonFromUrl(String url, Callback callback) throws IOException {
