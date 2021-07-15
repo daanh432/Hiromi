@@ -1,8 +1,5 @@
 package nl.daanh.hiromi.database.api;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import nl.daanh.hiromi.database.disk.HiromiDiskIOException;
 import nl.daanh.hiromi.helpers.WebUtils;
@@ -10,19 +7,23 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 
 public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HiromiApiAsyncDataSource.class);
+
     @Override
     protected void load(String url, HashMap<Long, Pair<Instant, JSONObject>> cache, long cacheKey) {
         try {
             WebUtils.apiGetJsonFromUrl(url, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    // ignore
+                    LOGGER.error(e.getMessage());
                 }
 
                 @Override
@@ -34,7 +35,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
                         } catch (JSONException exception) {
                             throw new IOException(exception.getMessage(), exception);
                         }
-                    } else {
+                    } else if (response.code() != 404) {
                         throw new IOException("Response did not contain valid data");
                     }
                 }
@@ -50,7 +51,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
             WebUtils.apiGetJsonFromUrl(url, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    // ignore
+                    LOGGER.error(e.getMessage());
                 }
 
                 @Override
@@ -62,7 +63,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
                         } catch (JSONException exception) {
                             throw new IOException(exception.getMessage(), exception);
                         }
-                    } else {
+                    } else if (response.code() != 404) {
                         throw new IOException("Response did not contain valid data");
                     }
                 }
@@ -82,7 +83,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
             WebUtils.apiPostToUrl(url + key, body, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    // ignore
+                    LOGGER.error(e.getMessage());
                 }
 
                 @Override
@@ -97,7 +98,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
                 }
             });
         } catch (IOException e) {
-            throw new HiromiDiskIOException(e);
+            throw new HiromiApiException(e.getMessage(), e);
         }
     }
 
@@ -111,7 +112,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
             WebUtils.apiPostToUrl(url + key, body, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    // ignore
+                    LOGGER.error(e.getMessage());
                 }
 
                 @Override

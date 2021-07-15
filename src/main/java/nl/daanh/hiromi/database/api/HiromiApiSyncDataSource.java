@@ -6,6 +6,8 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -14,6 +16,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 public class HiromiApiSyncDataSource extends HiromiApiDataSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HiromiApiSyncDataSource.class);
+
     @Override
     protected void load(String url, HashMap<Long, Pair<Instant, JSONObject>> cache, long cacheKey) {
         FutureTask<Object> futureTask = WebUtils.getFutureTask();
@@ -22,6 +26,7 @@ public class HiromiApiSyncDataSource extends HiromiApiDataSource {
             WebUtils.apiGetJsonFromUrl(url, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    LOGGER.error(e.getMessage());
                     futureTask.run();
                 }
 
@@ -35,6 +40,9 @@ public class HiromiApiSyncDataSource extends HiromiApiDataSource {
                         } catch (JSONException exception) {
                             throw new IOException(exception.getMessage(), exception);
                         }
+                    } else if (response.code() == 404) {
+                        // Not found so ignore
+                        futureTask.run();
                     } else {
                         throw new IOException("Response did not contain valid data");
                     }
@@ -55,6 +63,7 @@ public class HiromiApiSyncDataSource extends HiromiApiDataSource {
             WebUtils.apiGetJsonFromUrl(url, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    LOGGER.error(e.getMessage());
                     futureTask.run();
                 }
 
@@ -68,6 +77,9 @@ public class HiromiApiSyncDataSource extends HiromiApiDataSource {
                         } catch (JSONException exception) {
                             throw new IOException(exception.getMessage(), exception);
                         }
+                    } else if (response.code() == 404) {
+                        // not found so ignore
+                        futureTask.run();
                     } else {
                         throw new IOException("Response did not contain valid data");
                     }
@@ -92,6 +104,7 @@ public class HiromiApiSyncDataSource extends HiromiApiDataSource {
             WebUtils.apiPostToUrl(url + key, body, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    LOGGER.error(e.getMessage());
                     futureTask.run();
                 }
 
@@ -126,6 +139,7 @@ public class HiromiApiSyncDataSource extends HiromiApiDataSource {
             WebUtils.apiPostToUrl(url + key, body, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    LOGGER.error(e.getMessage());
                     futureTask.run();
                 }
 
