@@ -96,7 +96,7 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
                         Math.abs(mentionedTime.getHour() - time.getHour()),
                         Math.abs(mentionedTime.getMinute() - time.getMinute())
                 ),
-                isBehind ? "behind" : isAfter ? "after" : "ahead or behind"
+                isBehind ? "behind" : isAfter ? "ahead" : "ahead or behind"
         )).queue();
     }
 
@@ -162,7 +162,7 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
                         Math.abs(mentionedTime.getHour() - time.getHour()),
                         Math.abs(mentionedTime.getMinute() - time.getMinute())
                 ),
-                isBehind ? "behind" : isAfter ? "after" : "ahead or behind"
+                isBehind ? "behind" : isAfter ? "ahead" : "ahead or behind"
         )).setEphemeral(true).queue();
     }
 
