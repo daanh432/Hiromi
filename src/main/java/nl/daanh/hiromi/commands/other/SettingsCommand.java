@@ -174,7 +174,7 @@ public class SettingsCommand implements ICommand, ISlashCommand {
         OptionMapping keyOption = event.getOption("key");
         OptionMapping valueOption = event.getOption("value");
 
-        if (keyOption == null) {
+        if (keyOption == null || !validSettings.contains(keyOption.getAsString().toLowerCase())) {
             Button[] buttons = validSettings.stream().map((s -> Button.secondary(userId + ":" + this.getInvoke() + ":view:" + s, s))).toArray(Button[]::new);
             ctx.reply("Please specify the name of the setting you want to view / edit.")
                     .addActionRows(ActionRowUtils.splitButtons(buttons))
@@ -185,13 +185,6 @@ public class SettingsCommand implements ICommand, ISlashCommand {
         }
 
         String key = keyOption.getAsString();
-
-        if (!validSettings.contains(key.toLowerCase())) {
-            ctx.reply(String.format("Sorry. I'm not sure what setting you are looking for.\nPossible options: %s", String.join(", ", validSettings)))
-                    .setEphemeral(true)
-                    .queue();
-            return;
-        }
 
         if (valueOption == null) {
             ctx.reply(this.getValue(databaseManager, guild, key))

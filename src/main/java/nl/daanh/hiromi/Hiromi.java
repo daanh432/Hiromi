@@ -34,7 +34,7 @@ public class Hiromi {
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(
 //                        GatewayIntent.GUILD_INVITES,
 //                        GatewayIntent.GUILD_BANS,
-//                        GatewayIntent.GUILD_EMOJIS,
+                        GatewayIntent.GUILD_EMOJIS,
                         GatewayIntent.GUILD_VOICE_STATES,
                         GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_MESSAGE_REACTIONS,

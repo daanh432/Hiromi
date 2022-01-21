@@ -4,10 +4,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import nl.daanh.hiromi.models.commandcontext.IBaseCommandContext;
-import nl.daanh.hiromi.models.commandcontext.ICommandContext;
-import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;
-import nl.daanh.hiromi.models.commands.ICommand;
-import nl.daanh.hiromi.models.commands.ISlashCommand;
+import nl.daanh.hiromi.models.commandcontext.IGenericCommandContext;
+import nl.daanh.hiromi.models.commands.IGenericCommand;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
@@ -19,7 +17,7 @@ import java.lang.management.ManagementFactory;
 @CommandInvoke("about")
 @CommandCategory(CommandCategory.CATEGORY.OTHER)
 @SelfPermission(Permission.MESSAGE_WRITE)
-public class StatusCommand implements ICommand, ISlashCommand {
+public class StatusCommand implements IGenericCommand {
     private String getMessage(IBaseCommandContext ctx) {
         StringBuilder stringBuilder = new StringBuilder();
         ShardManager shardManager = ctx.getJDA().getShardManager();
@@ -37,13 +35,8 @@ public class StatusCommand implements ICommand, ISlashCommand {
     }
 
     @Override
-    public void handle(ICommandContext ctx) {
-        ctx.reply(this.getMessage(ctx)).queue();
-    }
-
-    @Override
-    public void handle(ISlashCommandContext ctx) {
-        ctx.reply(this.getMessage(ctx)).setEphemeral(true).queue();
+    public void handle(IGenericCommandContext ctx) {
+        ctx.reply(this.getMessage(ctx));
     }
 
     @Override
