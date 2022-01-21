@@ -97,29 +97,29 @@ public interface IDatabaseManager {
         writeKey(guild, "categories", String.valueOf(guildCategories));
     }
 
-    default int getBankAmount(Member member) {
+    default long getBankAmount(Member member) {
         String bankAmount = this.getKey(member, "bank");
         try {
-            return Integer.parseInt(bankAmount != null ? bankAmount : "0");
+            return Long.parseLong(bankAmount != null ? bankAmount : "0");
         } catch (NumberFormatException exception) {
             return 0;
         }
     }
 
-    default int getCashAmount(Member member) {
+    default long getCashAmount(Member member) {
         String cashAmount = this.getKey(member, "cash");
         try {
-            return Integer.parseInt(cashAmount != null ? cashAmount : "0");
+            return Long.parseLong(cashAmount != null ? cashAmount : "0");
         } catch (NumberFormatException exception) {
             return 0;
         }
     }
 
-    default void setBankAmount(Member member, int bankAmount) {
+    default void setBankAmount(Member member, long bankAmount) {
         writeKey(member, "bank", String.valueOf(bankAmount));
     }
 
-    default void setCashAmount(Member member, int cashAmount) {
+    default void setCashAmount(Member member, long cashAmount) {
         writeKey(member, "cash", String.valueOf(cashAmount));
     }
 

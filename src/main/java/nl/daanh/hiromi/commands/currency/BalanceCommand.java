@@ -21,8 +21,8 @@ public class BalanceCommand implements IGenericCommand {
         Member member = ctx.getMember();
         IDatabaseManager databaseManager = ctx.getConfiguration().getDatabaseManager();
 
-        int bankAmount = databaseManager.getBankAmount(member);
-        int cashAmount = databaseManager.getCashAmount(member);
+        long bankAmount = databaseManager.getBankAmount(member);
+        long cashAmount = databaseManager.getCashAmount(member);
 
         ctx.reply(String.format("Your current bank account balance is: ``%s`` and your current wallet balance is: ``%s``",
                 MessageFormatting.currencyFormat(ctx, bankAmount),

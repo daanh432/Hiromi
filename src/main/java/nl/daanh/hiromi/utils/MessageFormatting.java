@@ -14,6 +14,10 @@ public class MessageFormatting {
         return ctx.getConfiguration().getDatabaseManager().getCurrency(ctx.getGuild()).replace("%", String.valueOf(amount));
     }
 
+    public static String currencyFormat(IBaseCommandContext ctx, long amount) {
+        return ctx.getConfiguration().getDatabaseManager().getCurrency(ctx.getGuild()).replace("%", String.valueOf(amount));
+    }
+
     public static String currentDateTimeFormatted(TimeZone zoneId) {
         return dateTimeFormat(Instant.now(), zoneId);
     }
