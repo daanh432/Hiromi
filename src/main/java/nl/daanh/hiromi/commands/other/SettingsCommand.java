@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.Button;
 import nl.daanh.hiromi.database.IDatabaseManager;
 import nl.daanh.hiromi.exceptions.HiromiSettingNotFoundException;
-import nl.daanh.hiromi.helpers.ActionRowUtils;
 import nl.daanh.hiromi.models.commandcontext.IButtonCommandContext;
 import nl.daanh.hiromi.models.commandcontext.ICommandContext;
 import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;
@@ -20,6 +19,7 @@ import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
 import nl.daanh.hiromi.models.commands.annotations.UserPermission;
+import nl.daanh.hiromi.utils.ActionRowUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -295,7 +295,6 @@ public class SettingsCommand implements ICommand, ISlashCommand {
                 .addOptions(
                         new OptionData(OptionType.STRING, "key", "The name of the setting you want to change or view"),
                         new OptionData(OptionType.STRING, "value", "The new value you want to specify for the setting")
-
                 );
     }
 }

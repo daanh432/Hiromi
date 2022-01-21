@@ -1,64 +1,45 @@
 package nl.daanh.hiromi.listeners;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.rabbitmq.client.Delivery;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import nl.daanh.hiromi.CommandManager;
-import nl.daanh.hiromi.helpers.queues.MessageQueue;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
-import nl.daanh.hiromi.models.proto.Response;
+import nl.daanh.hiromi.Hiromi;
+import nl.daanh.hiromi.database.IDatabaseManager;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GuildMessageListener extends ListenerAdapter {
+public class GuildMessageListener extends BaseListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildMessageListener.class);
-    private final IConfiguration configuration;
     private final CommandManager commandManager;
-    private MessageQueue[] messageQueues;
 
-    public GuildMessageListener(IConfiguration configuration, CommandManager commandManager) {
-        this.configuration = configuration;
+    public GuildMessageListener(CommandManager commandManager) {
         this.commandManager = commandManager;
     }
 
     @Override
-    public void onReady(@NotNull ReadyEvent event) {
-        if (messageQueues == null) {
-            LOGGER.debug("Creating message queue array");
-            final int shardsTotal = event.getJDA().getShardManager().getShardsTotal();
-            messageQueues = new MessageQueue[shardsTotal];
-        }
-        final int shardId = event.getJDA().getShardInfo().getShardId();
-        if (messageQueues[shardId] == null) {
-            LOGGER.debug("Creating message queue for shard: " + shardId);
-            messageQueues[shardId] = new MessageQueue();
-        }
-    }
+    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+        if (!shouldAct(event.getAuthor())) return;
+        // TODO Implement received logging
 
-    private void rpcCallback(GuildMessageReceivedEvent event, String consumerTag, Delivery delivery) {
-        try {
-            Response response = Response.parseFrom(delivery.getBody());
+        if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
+        final IHiromiConfig config = Hiromi.getConfig();
+        final IDatabaseManager databaseManager = config.getDatabaseManager();
 
-            final TextChannel channel = event.getJDA().getShardManager().getTextChannelById(response.getChannelId());
-            if (channel != null && channel.canTalk()) {
-                channel.sendMessage(response.getResponseMessage()).queue();
-            }
-        } catch (InvalidProtocolBufferException ignore) {
-            // ignore
-        }
+        final String prefix = databaseManager.getPrefix(event.getGuild()) != null ? databaseManager.getPrefix(event.getGuild()) : config.getGlobalPrefix();
+        this.commandManager.handle(event, prefix);
     }
 
     @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
-        if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
-        MessageQueue messageQueue = messageQueues[event.getJDA().getShardInfo().getShardId()];
-        messageQueue.callRPC(event, (consumerTag, delivery) -> this.rpcCallback(event, consumerTag, delivery));
+    public void onGuildMessageUpdate(@NotNull GuildMessageUpdateEvent event) {
+        if (!shouldAct(event.getAuthor())) return;
+        // TODO Implement update logging
+    }
 
-        final String prefix = this.configuration.getDatabaseManager().getPrefix(event.getGuild()) != null ? this.configuration.getDatabaseManager().getPrefix(event.getGuild()) : this.configuration.getGlobalPrefix();
-        this.commandManager.handle(event, prefix);
+    @Override
+    public void onGuildMessageDelete(@NotNull GuildMessageDeleteEvent event) {
+        // TODO Implement delete logging
     }
 }

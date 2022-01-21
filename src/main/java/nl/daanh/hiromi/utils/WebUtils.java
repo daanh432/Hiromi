@@ -1,4 +1,4 @@
-package nl.daanh.hiromi.helpers;
+package nl.daanh.hiromi.utils;
 
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;

@@ -6,7 +6,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@Repeatable(nl.daanh.hiromi.models.commands.annotations.UserPermissions.class)
+@Repeatable(UserPermissions.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UserPermission {
     Permission value();

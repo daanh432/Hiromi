@@ -1,11 +1,7 @@
 package nl.daanh.hiromi.database.api;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import nl.daanh.hiromi.database.disk.HiromiDiskIOException;
-import nl.daanh.hiromi.helpers.WebUtils;
+import nl.daanh.hiromi.utils.WebUtils;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -97,7 +93,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
                 }
             });
         } catch (IOException e) {
-            throw new HiromiDiskIOException(e);
+            throw new HiromiApiException(e);
         }
     }
 
@@ -125,7 +121,7 @@ public class HiromiApiAsyncDataSource extends HiromiApiDataSource {
                 }
             });
         } catch (IOException e) {
-            throw new HiromiDiskIOException(e);
+            throw new HiromiApiException(e);
         }
     }
 }

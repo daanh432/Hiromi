@@ -18,7 +18,9 @@ import nl.daanh.hiromi.models.commands.ISlashCommand;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,13 +30,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CommandManager {
-    private final IConfiguration configuration;
+    private final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
     private final HashMap<String, ICommand> commands = new HashMap<>();
     private final HashMap<String, ISlashCommand> slashCommands = new HashMap<>();
 
-    public CommandManager(IConfiguration configuration) {
-        this.configuration = configuration;
-
+    public CommandManager(IHiromiConfig config) {
         // Miscellaneous
         addCommand(new PingCommand());
         addCommand(new LoadCommand(this));
@@ -57,7 +57,7 @@ public class CommandManager {
         if (command.getClass().getAnnotationsByType(SelfPermission.class).length == 0)
             throw new RuntimeException("Command self permissions are required.");
 
-        if (commandCategory.value() == CommandCategory.CATEGORY.MUSIC && !configuration.getMusicEnabled())
+        if (commandCategory.value() == CommandCategory.CATEGORY.MUSIC && !Hiromi.getConfig().getMusicEnabled())
             return;
 
         if (command instanceof ICommand)
@@ -119,8 +119,9 @@ public class CommandManager {
     private boolean cantContinue(IBaseCommand command, IBaseCommandContext ctx) {
         CommandCategory.CATEGORY category = command.getClass().getAnnotation(CommandCategory.class).value();
 
-        if (category != CommandCategory.CATEGORY.OTHER && !this.configuration.getDatabaseManager().getCategoryEnabled(ctx.getGuild(), category))
-            return true;
+// TODO Check if category is enabled
+//        if (category != CommandCategory.CATEGORY.OTHER && !this.configuration.getDatabaseManager().getCategoryEnabled(ctx.getGuild(), category))
+//            return true;
 
         return !command.checkPermissions(ctx);
     }
@@ -130,24 +131,15 @@ public class CommandManager {
         final List<String> args = Arrays.asList(splitMessage).subList(1, splitMessage.length);
 
         ICommand command = this.getCommand(splitMessage[0].toLowerCase());
-
         if (command == null) return;
-
-        ICommandContext ctx = new GuildMessageCommandContext(event, args, this.configuration);
-
+        ICommandContext ctx = new GuildMessageCommandContext(event, args, Hiromi.getConfig());
         if (cantContinue(command, ctx)) return;
 
         try {
             command.handle(ctx);
         } catch (Exception exception) {
             // TODO handle this? send the user error message?
-            exception.printStackTrace();
-            event.getChannel().sendMessage(
-                    String.format("Oops, it looks like something went wrong...\n*%s: %s*",
-                            exception.getClass(),
-                            exception.getMessage()
-                    )
-            ).queue();
+            LOGGER.error("Something went wrong trying to handle the command.", exception);
         }
     }
 
@@ -155,22 +147,14 @@ public class CommandManager {
         ISlashCommand command = this.getSlashCommand(event.getName());
 
         if (command == null) return;
-
-        ISlashCommandContext ctx = new SlashCommandContext(event, this.configuration);
-
+        ISlashCommandContext ctx = new SlashCommandContext(event, Hiromi.getConfig());
         if (cantContinue(command, ctx)) return;
 
         try {
             command.handle(ctx);
         } catch (Exception exception) {
             // TODO handle this? send the user error message?
-            exception.printStackTrace();
-            event.getTextChannel().sendMessage(
-                    String.format("Oops, it looks like something went wrong...\n*%s: %s*",
-                            exception.getClass(),
-                            exception.getMessage()
-                    )
-            ).queue();
+            LOGGER.error("Something went wrong trying to handle the command.", exception);
         }
     }
 
@@ -180,22 +164,14 @@ public class CommandManager {
         ISlashCommand command = this.getSlashCommand(type);
 
         if (command == null) return;
-
-        IButtonCommandContext ctx = new ButtonCommandContext(event, data, this.configuration);
-
+        IButtonCommandContext ctx = new ButtonCommandContext(event, data, Hiromi.getConfig());
         if (cantContinue(command, ctx)) return;
 
         try {
             command.handle(subtype, ctx);
         } catch (Exception exception) {
             // TODO handle this? send the user error message?
-            exception.printStackTrace();
-            event.getTextChannel().sendMessage(
-                    String.format("Oops, it looks like something went wrong...\n*%s: %s*",
-                            exception.getClass(),
-                            exception.getMessage()
-                    )
-            ).queue();
+            LOGGER.error("Something went wrong trying to handle the command.", exception);
         }
     }
 }

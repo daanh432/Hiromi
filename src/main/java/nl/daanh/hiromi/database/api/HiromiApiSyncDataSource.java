@@ -1,7 +1,7 @@
 package nl.daanh.hiromi.database.api;
 
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import nl.daanh.hiromi.helpers.WebUtils;
+import nl.daanh.hiromi.utils.WebUtils;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;

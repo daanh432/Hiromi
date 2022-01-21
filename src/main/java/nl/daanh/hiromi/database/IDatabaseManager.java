@@ -4,21 +4,20 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public interface IDatabaseManager {
+    Logger LOGGER = LoggerFactory.getLogger(IDatabaseManager.class);
     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH:mm:ss");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -76,19 +75,19 @@ public interface IDatabaseManager {
 
     default List<CommandCategory.CATEGORY> getEnabledCategories(Guild guild) {
         String categories = this.getKey(guild, "categories");
-        int guildCategories = Integer.parseInt(categories);
+        int guildCategories = Integer.parseInt(categories != null ? categories : "0");
         return Arrays.stream(CommandCategory.CATEGORY.values()).filter(category -> (guildCategories & category.getMask()) == category.getMask()).collect(Collectors.toList());
     }
 
     default boolean getCategoryEnabled(Guild guild, CommandCategory.CATEGORY category) {
         String categories = this.getKey(guild, "categories");
-        int guildCategories = Integer.parseInt(categories);
+        int guildCategories = Integer.parseInt(categories != null ? categories : "0");
         return (guildCategories & category.getMask()) == category.getMask();
     }
 
     default void setCategoryEnabled(Guild guild, CommandCategory.CATEGORY category, boolean enabled) {
         String categories = this.getKey(guild, "categories");
-        int guildCategories = Integer.parseInt(categories);
+        int guildCategories = Integer.parseInt(categories != null ? categories : "0");
 
         if (enabled)
             guildCategories = guildCategories | category.getMask();
@@ -101,7 +100,7 @@ public interface IDatabaseManager {
     default int getBankAmount(Member member) {
         String bankAmount = this.getKey(member, "bank");
         try {
-            return Integer.parseInt(bankAmount);
+            return Integer.parseInt(bankAmount != null ? bankAmount : "0");
         } catch (NumberFormatException exception) {
             return 0;
         }
@@ -110,7 +109,7 @@ public interface IDatabaseManager {
     default int getCashAmount(Member member) {
         String cashAmount = this.getKey(member, "cash");
         try {
-            return Integer.parseInt(cashAmount);
+            return Integer.parseInt(cashAmount != null ? cashAmount : "0");
         } catch (NumberFormatException exception) {
             return 0;
         }
@@ -132,24 +131,25 @@ public interface IDatabaseManager {
 
         try {
             return dateFormatter.parse(birthdate);
-        } catch (ParseException e) {
+        } catch (Exception e) {
+            LOGGER.error("Something went wrong parsing the birthdate.", e);
             return null;
         }
     }
 
     @Nullable
-    default ZoneId getTimezone(User user) {
+    default TimeZone getTimezone(User user) {
         String timezone = this.getKey(user, "timezone");
         if (timezone == null) return null;
         try {
-            ZoneOffset offset = ZoneOffset.ofTotalSeconds(Integer.parseInt(timezone));
-            return ZoneId.ofOffset("UTC", offset);
-        } catch (DateTimeException | NumberFormatException exception) {
+            return TimeZone.getTimeZone(timezone);
+        } catch (Exception exception) {
+            LOGGER.error("Something went wrong parsing the timezone.", exception);
             return null;
         }
     }
 
-    default void setTimezone(User user, ZoneId zoneId) {
-        writeKey(user, "timezone", String.valueOf(zoneId.getRules().getOffset(Instant.now()).getTotalSeconds()));
+    default void setTimezone(User user, TimeZone timezone) {
+        writeKey(user, "timezone", timezone.getID());
     }
 }

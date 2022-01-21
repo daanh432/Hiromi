@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import nl.daanh.hiromi.database.IDatabaseManager;
-import nl.daanh.hiromi.helpers.MessageFormatting;
 import nl.daanh.hiromi.models.commandcontext.ICommandContext;
 import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;
 import nl.daanh.hiromi.models.commands.ICommand;
@@ -15,13 +14,11 @@ import nl.daanh.hiromi.models.commands.ISlashCommand;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
+import nl.daanh.hiromi.utils.MessageFormatting;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
+import java.util.TimeZone;
 
 @CommandInvoke("timezone")
 @CommandInvoke("gettimezone")
@@ -29,11 +26,6 @@ import java.util.Locale;
 @CommandCategory(CommandCategory.CATEGORY.PERSONALITY)
 @SelfPermission(Permission.MESSAGE_WRITE)
 public class TimezoneCommand implements ICommand, ISlashCommand {
-    private String parseTimezone(ZoneId timezoneInput) {
-        return timezoneInput.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-    }
-
-
     @Override
     public void handle(ICommandContext ctx) {
         Member member = ctx.getMember();
@@ -42,7 +34,7 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
         List<Member> mentionedMembers = ctx.getMessage().getMentionedMembers();
 
         if (args.isEmpty()) {
-            ZoneId timezone = databaseManager.getTimezone(member.getUser());
+            TimeZone timezone = databaseManager.getTimezone(member.getUser());
             if (timezone == null) {
                 ctx.reply(String.format("You don't have your timezone set. Please use %ssettimezone <timezone> to set your timezone",
                         databaseManager.getPrefix(ctx.getGuild())
@@ -50,7 +42,10 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
                 return;
             }
 
-            ctx.reply(String.format("Your timezone is set to ``%s``", parseTimezone(timezone))).queue();
+            ctx.reply(String.format("Your timezone is set to ``%s``\nYour date / time is: ``%s``",
+                    MessageFormatting.parseTimezone(timezone),
+                    MessageFormatting.currentDateTimeFormatted(timezone)
+            )).queue();
             return;
         }
 
@@ -62,7 +57,7 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
 
         Member mentionedMember = mentionedMembers.get(0);
 
-        ZoneId mentionedTimezone = databaseManager.getTimezone(mentionedMember.getUser());
+        TimeZone mentionedTimezone = databaseManager.getTimezone(mentionedMember.getUser());
         if (mentionedTimezone == null) {
             ctx.reply(String.format("It looks like your friend hasn't set their timezone set. Please tell them to use %ssettimezone <timezone> to set their timezone",
                     databaseManager.getPrefix(ctx.getGuild())
@@ -70,26 +65,26 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
             return;
         }
 
-        ZoneId timezone = databaseManager.getTimezone(member.getUser());
+        TimeZone timezone = databaseManager.getTimezone(member.getUser());
 
         if (timezone == null) {
             ctx.reply(String.format("The timezone of %s is set to %s\nTheir current time is: %s",
                     mentionedMember.getEffectiveName(),
-                    parseTimezone(mentionedTimezone),
+                    MessageFormatting.parseTimezone(mentionedTimezone),
                     MessageFormatting.currentDateTimeFormatted(mentionedTimezone)
             )).queue();
             return;
         }
 
-        LocalDateTime mentionedTime = ZonedDateTime.now(mentionedTimezone).toLocalDateTime();
-        LocalDateTime time = ZonedDateTime.now(timezone).toLocalDateTime();
+        ZonedDateTime mentionedTime = ZonedDateTime.now(mentionedTimezone.toZoneId());
+        ZonedDateTime time = ZonedDateTime.now(timezone.toZoneId());
 
         boolean isBehind = mentionedTime.isBefore(time);
         boolean isAfter = mentionedTime.isAfter(time);
 
         ctx.reply(String.format("The timezone of %s is set to %s\nTheir current time is: %s\nYour time is: %s\nThey are %s %s",
                 mentionedMember.getEffectiveName(),
-                parseTimezone(mentionedTimezone),
+                MessageFormatting.parseTimezone(mentionedTimezone),
                 MessageFormatting.currentDateTimeFormatted(mentionedTimezone),
                 MessageFormatting.currentDateTimeFormatted(timezone),
                 String.format("%s hour(s) and %s minutes",
@@ -108,7 +103,7 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
         OptionMapping userMention = event.getOption("member");
 
         if (userMention == null) {
-            ZoneId timezone = databaseManager.getTimezone(member.getUser());
+            TimeZone timezone = databaseManager.getTimezone(member.getUser());
             if (timezone == null) {
                 ctx.reply("You don't have your timezone set. Please use /settimezone <timezone> to set your timezone")
                         .setEphemeral(true)
@@ -116,7 +111,10 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
                 return;
             }
 
-            ctx.reply(String.format("Your timezone is set to ``%s``", parseTimezone(timezone))).setEphemeral(true).queue();
+            ctx.reply(String.format("Your timezone is set to ``%s``\nYour date / time is: ``%s``",
+                    MessageFormatting.parseTimezone(timezone),
+                    MessageFormatting.currentDateTimeFormatted(timezone)
+            )).setEphemeral(true).queue();
             return;
         }
 
@@ -128,7 +126,7 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
 
         Member mentionedMember = userMention.getAsMember();
 
-        ZoneId mentionedTimezone = databaseManager.getTimezone(mentionedMember.getUser());
+        TimeZone mentionedTimezone = databaseManager.getTimezone(mentionedMember.getUser());
         if (mentionedTimezone == null) {
             ctx.reply("It looks like your friend hasn't set their timezone set. Please tell them to use /settimezone <timezone> to set their timezone")
                     .setEphemeral(true)
@@ -136,26 +134,26 @@ public class TimezoneCommand implements ICommand, ISlashCommand {
             return;
         }
 
-        ZoneId timezone = databaseManager.getTimezone(member.getUser());
+        TimeZone timezone = databaseManager.getTimezone(member.getUser());
 
         if (timezone == null) {
             ctx.reply(String.format("The timezone of %s is set to %s\nTheir current time is: %s",
                     mentionedMember.getEffectiveName(),
-                    parseTimezone(mentionedTimezone),
+                    MessageFormatting.parseTimezone(mentionedTimezone),
                     MessageFormatting.currentDateTimeFormatted(mentionedTimezone)
             )).setEphemeral(true).queue();
             return;
         }
 
-        LocalDateTime mentionedTime = ZonedDateTime.now(mentionedTimezone).toLocalDateTime();
-        LocalDateTime time = ZonedDateTime.now(timezone).toLocalDateTime();
+        ZonedDateTime mentionedTime = ZonedDateTime.now(mentionedTimezone.toZoneId());
+        ZonedDateTime time = ZonedDateTime.now(timezone.toZoneId());
 
         boolean isBehind = mentionedTime.isBefore(time);
         boolean isAfter = mentionedTime.isAfter(time);
 
         ctx.reply(String.format("The timezone of %s is set to %s\nTheir current time is: %s\nYour time is: %s\nThey are %s %s",
                 mentionedMember.getEffectiveName(),
-                parseTimezone(mentionedTimezone),
+                MessageFormatting.parseTimezone(mentionedTimezone),
                 MessageFormatting.currentDateTimeFormatted(mentionedTimezone),
                 MessageFormatting.currentDateTimeFormatted(timezone),
                 String.format("%s hour(s) and %s minutes",

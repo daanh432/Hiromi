@@ -1,4 +1,4 @@
-package nl.daanh.hiromi.helpers;
+package nl.daanh.hiromi.utils;
 
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -13,8 +13,9 @@ public class ActionRowUtils {
 
     /**
      * Splits the buttons so they fit into multiple action rows
+     *
      * @param buttonsToSplit the buttons that should be split into rows
-     * @param chunkSize amount of buttons allowed per row
+     * @param chunkSize      amount of buttons allowed per row
      * @return array with one or more rows of buttons
      */
     public static ActionRow[] splitButtons(Button[] buttonsToSplit, int chunkSize) {

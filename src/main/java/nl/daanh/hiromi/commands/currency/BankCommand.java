@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import nl.daanh.hiromi.database.IDatabaseManager;
-import nl.daanh.hiromi.helpers.MessageFormatting;
 import nl.daanh.hiromi.models.commandcontext.ICommandContext;
 import nl.daanh.hiromi.models.commandcontext.ISlashCommandContext;
 import nl.daanh.hiromi.models.commands.ICommand;
@@ -16,6 +15,7 @@ import nl.daanh.hiromi.models.commands.ISlashCommand;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
+import nl.daanh.hiromi.utils.MessageFormatting;
 
 import java.util.List;
 
@@ -127,11 +127,11 @@ public class BankCommand implements ICommand, ISlashCommand {
                 databaseManager.setCashAmount(member, cashAmount);
                 databaseManager.setBankAmount(member, bankAmount);
                 ctx.reply(
-                        String.format("Deposited %s to your bank account. New balance for your bank account: %s, new balance for your wallet: %s",
-                                MessageFormatting.currencyFormat(ctx, amount),
-                                MessageFormatting.currencyFormat(ctx, bankAmount),
-                                MessageFormatting.currencyFormat(ctx, cashAmount)
-                        )).setEphemeral(true)
+                                String.format("Deposited %s to your bank account. New balance for your bank account: %s, new balance for your wallet: %s",
+                                        MessageFormatting.currencyFormat(ctx, amount),
+                                        MessageFormatting.currencyFormat(ctx, bankAmount),
+                                        MessageFormatting.currencyFormat(ctx, cashAmount)
+                                )).setEphemeral(true)
                         .queue();
                 return;
             }

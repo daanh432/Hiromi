@@ -7,13 +7,12 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import nl.daanh.hiromi.lavaplayer.GuildMusicManager;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
 
 public interface IBaseCommandContext {
     Guild getGuild();
 
-    IConfiguration getConfiguration();
+    IHiromiConfig getConfiguration();
 
     void replyInstant(String content);
 
@@ -29,7 +28,8 @@ public interface IBaseCommandContext {
 
     AudioManager getAudioManager();
 
-    GuildMusicManager getGuildMusicManager();
+// TODO Guild music manager
+//    GuildMusicManager getGuildMusicManager();
 
     TextChannel getChannel();
 }
