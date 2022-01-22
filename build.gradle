@@ -38,14 +38,15 @@ dependencies {
     // https://github.com/cdimascio/dotenv-kotlin
     implementation(group: 'io.github.cdimascio', name: 'dotenv-kotlin', version: '6.2.2')
 
-//    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-//    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
-//
-//    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-//    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.31.1'
-//
-//    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-//    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation(group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1')
+
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    implementation(group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.3')
+
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation(group: 'org.postgresql', name: 'postgresql', version: '42.3.1')
+
 }
 
 shadowJar {

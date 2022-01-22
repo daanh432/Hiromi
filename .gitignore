@@ -35,8 +35,8 @@ gradle-app.setting
 
 guildConfigs/
 userConfigs/
+database/
 
-Dockerfile
 docker-compose.yml
 config.toml
 config.json
