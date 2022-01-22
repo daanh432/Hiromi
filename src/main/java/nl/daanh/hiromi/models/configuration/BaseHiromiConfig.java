@@ -26,6 +26,8 @@ public abstract class BaseHiromiConfig implements IHiromiConfig {
 
     protected abstract Optional<Integer> getInt(String key);
 
+    protected abstract Optional<Long> getLong(String key);
+
     /**
      * The active configuration instance.
      *
@@ -35,18 +37,16 @@ public abstract class BaseHiromiConfig implements IHiromiConfig {
         return instance;
     }
 
+    @Override
+    public long getOwner() {
+        return getLong("OWNER").or(() -> Optional.of(12345L)).get();
+    }
+
     @NotNull
     public Color getEmbedColor() {
         return Color.decode("#" + instance.getString("EMBED_COLOR_HEX").or(() -> Optional.of("4287f5")));
     }
 
-    /**
-     * Gets the discord token, can only be called once
-     *
-     * @return Discord token string
-     * @throws RuntimeException                 when it's being fetched more than once
-     * @throws java.util.NoSuchElementException when the token is not set in the config
-     */
     @Override
     @NotNull
     public String getToken() {
@@ -55,11 +55,6 @@ public abstract class BaseHiromiConfig implements IHiromiConfig {
         return getString("DISCORD_TOKEN").orElseThrow();
     }
 
-    /**
-     * Gets the amount of shards to start
-     *
-     * @return int of the count of shards to start
-     */
     @Override
     public int getTotalShards() {
         return getInt("DISCORD_SHARDS").or(() -> Optional.of(1)).get();

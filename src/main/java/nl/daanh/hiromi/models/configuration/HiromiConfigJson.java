@@ -23,6 +23,7 @@ public class HiromiConfigJson extends BaseHiromiConfig {
         return new String(Files.readAllBytes(file.toPath()));
     }
 
+    @Override
     protected Optional<String> getString(String key) {
         try {
             return Optional.ofNullable(jsonObject.getString(key));
@@ -32,6 +33,7 @@ public class HiromiConfigJson extends BaseHiromiConfig {
         }
     }
 
+    @Override
     protected Optional<Integer> getInt(String key) {
         try {
             return Optional.of(jsonObject.getInt(key));
@@ -41,6 +43,17 @@ public class HiromiConfigJson extends BaseHiromiConfig {
         }
     }
 
+    @Override
+    protected Optional<Long> getLong(String key) {
+        try {
+            return Optional.of(jsonObject.getLong(key));
+        } catch (Exception exception) {
+            LOGGER.warn("The setting " + key + " was not set.");
+            return Optional.empty();
+        }
+    }
+
+    @Override
     protected Optional<Boolean> getBool(String key) {
         try {
             return Optional.of(jsonObject.getBoolean(key));

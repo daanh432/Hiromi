@@ -39,4 +39,16 @@ public class HiromiConfigDotEnv extends BaseHiromiConfig {
             return Optional.empty();
         }
     }
+
+    @Override
+    protected Optional<Long> getLong(String key) {
+        final Optional<String> string = this.getString(key);
+        if (string.isEmpty()) return Optional.empty();
+        try {
+            return Optional.of(Long.parseLong(string.get()));
+        } catch (Exception exception) {
+            LOGGER.error("Something went wrong trying to parse a long from the configuration.", exception);
+            return Optional.empty();
+        }
+    }
 }

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import nl.daanh.hiromi.CommandManager;
+import nl.daanh.hiromi.DeveloperOverrides;
 import nl.daanh.hiromi.Hiromi;
 import nl.daanh.hiromi.database.IDatabaseManager;
 import nl.daanh.hiromi.models.configuration.IHiromiConfig;
@@ -22,6 +23,7 @@ public class GuildMessageListener extends BaseListener {
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         if (!shouldAct(event.getAuthor())) return;
+        DeveloperOverrides.onGuildMessageReceived(event);
         // TODO Implement received logging
 
         if (event.isWebhookMessage() || event.getAuthor().isBot()) return;

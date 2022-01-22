@@ -80,6 +80,13 @@ public class EventManager implements IEventManager {
         }
 
         shardManager.shutdown();
-        System.exit(0);
+    }
+
+    public void restart(int shardId) {
+        final ShardManager shardManager = Hiromi.getShardManager();
+        LOGGER.warn("Restarting shard {}, exiting!", shardId);
+        shardManager.shutdown(shardId);
+        shardManager.start(shardId);
+        LOGGER.warn("Restarting shard {}, started!", shardId);
     }
 }

@@ -25,11 +25,12 @@ public class Hiromi {
     private static final Logger LOGGER = LoggerFactory.getLogger(Hiromi.class);
     private static Hiromi instance;
     private final ShardManager shardManager;
+    private final EventManager eventManager;
 
     public Hiromi() throws LoginException {
         IHiromiConfig config = new HiromiConfigDotEnv();
         this.configureDefaults(config);
-        EventManager eventManager = new EventManager(config);
+        this.eventManager = new EventManager(config);
 
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(
 //                        GatewayIntent.GUILD_INVITES,
@@ -46,7 +47,7 @@ public class Hiromi {
                         "/help | Shard " + (shardId + 1)
                 ))
                 .setBulkDeleteSplittingEnabled(false)
-                .setEventManagerProvider((id) -> eventManager)
+                .setEventManagerProvider((id) -> this.eventManager)
                 .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE)
                 .enableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOTE, CacheFlag.MEMBER_OVERRIDES, CacheFlag.ROLE_TAGS)
@@ -86,6 +87,10 @@ public class Hiromi {
 
     public static ShardManager getShardManager() {
         return getInstance().shardManager;
+    }
+
+    public static EventManager getEventManager() {
+        return getInstance().eventManager;
     }
 
     public static IHiromiConfig getConfig() {
