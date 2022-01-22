@@ -29,4 +29,28 @@ public class MessageFormatting {
     public static String parseTimezone(TimeZone timezoneInput) {
         return timezoneInput.getDisplayName(timezoneInput.useDaylightTime() && timezoneInput.inDaylightTime(new Date()), TimeZone.LONG, Locale.ENGLISH);
     }
+
+    public static boolean mapStringToBool(String value) {
+        value = value.toLowerCase();
+        switch (value) {
+            case "yes":
+            case "true":
+            case "tru":
+            case "tre":
+            case "tue":
+            case "rue":
+            case "ja":
+            case "jaa":
+            case "y":
+            case "yeah":
+            case "ye":
+            case "yep":
+            case "ys":
+            case "es":
+            case "on":
+                return true;
+            default:
+                return false;
+        }
+    }
 }
