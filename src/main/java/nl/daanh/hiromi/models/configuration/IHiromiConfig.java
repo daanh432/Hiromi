@@ -47,4 +47,25 @@ public interface IHiromiConfig {
     String getGithubLink();
 
     String getApiToken();
+
+    /**
+     * Optional setting for usage with data sources that use databases
+     *
+     * @return jdbc url
+     */
+    String getJdbcUrl();
+
+    /**
+     * Optional setting for usage with data sources that use databases
+     *
+     * @return jdbc username
+     */
+    String getJdbcUsername();
+
+    /**
+     * Optional setting for usage with data sources that use databases
+     *
+     * @return jdbc password
+     */
+    String getJdbcPassword();
 }
