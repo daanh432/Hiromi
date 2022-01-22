@@ -23,7 +23,7 @@ public class MusicManager {
     private final Map<Long, GuildMusicManager> musicManagers;
     private final AudioPlayerManager playerManager;
 
-    public MusicManager() {
+    private MusicManager() {
         musicManagers = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
@@ -79,13 +79,12 @@ public class MusicManager {
                 }
 
                 channel.sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
-
                 play(channel.getGuild(), musicManager, firstTrack);
             }
 
             @Override
             public void noMatches() {
-                channel.sendMessage("Nothing found by " + trackUrl).queue();
+                channel.sendMessage("Nothing found by: " + trackUrl).queue();
             }
 
             @Override
