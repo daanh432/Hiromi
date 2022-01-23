@@ -1,4 +1,4 @@
-package nl.daanh.hiromi.commands.currency;
+package nl.daanh.hiromi.commands.fun;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
