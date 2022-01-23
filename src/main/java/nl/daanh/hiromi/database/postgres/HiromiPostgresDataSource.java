@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.User;
 import nl.daanh.hiromi.Hiromi;
 import nl.daanh.hiromi.database.HiromiDatabaseException;
 import nl.daanh.hiromi.database.IDatabaseManager;
-import nl.daanh.hiromi.exceptions.NotImplementedException;
 import nl.daanh.hiromi.models.configuration.IHiromiConfig;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +22,8 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
     private static final int MIN_IDLE = 5;
     private static final List<IPostgresMigration> MIGRATION_LIST = List.of(
             new CreateUserSettingsTable(),
-            new CreateGuildSettingsTable()
+            new CreateGuildSettingsTable(),
+            new CreateGuildMemberSettingsTable()
     );
 
     private final HikariConfig config;
@@ -117,7 +117,22 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
     @Nullable
     @Override
     public String getKey(Member member, String key) {
-        throw new NotImplementedException("Not implemented on postgres");
+        try {
+            final Connection connection = getConnection();
+            final PreparedStatement preparedStatement = connection.prepareStatement("select * from hiromi.guild_member_settings where guild_id = ? and member_id = ? and key = ?");
+            preparedStatement.setLong(1, member.getGuild().getIdLong());
+            preparedStatement.setLong(2, member.getIdLong());
+            preparedStatement.setString(3, key);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getString("value");
+            }
+        } catch (SQLException e) {
+            throw new HiromiDatabaseException("Something went wrong trying to fetch data from the database", e);
+        }
+
+        return this.getDefaultSetting(key);
     }
 
     @Nullable
@@ -157,7 +172,18 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
 
     @Override
     public void writeKey(Member member, String key, String value) {
-        throw new NotImplementedException("Not implemented on postgres");
+        try {
+            final Connection connection = getConnection();
+            final PreparedStatement preparedStatement = connection.prepareStatement("insert into guild_member_settings (guild_id, member_id, key, value) VALUES(?, ?, ?, ?) on conflict on constraint guild_member_settings_pk do update set value=?");
+            preparedStatement.setLong(1, member.getGuild().getIdLong());
+            preparedStatement.setLong(2, member.getIdLong());
+            preparedStatement.setString(3, key);
+            preparedStatement.setString(4, value);
+            preparedStatement.setString(5, value);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new HiromiDatabaseException("Something went wrong trying to update in the database", e);
+        }
     }
 
     @Override
