@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @CommandInvoke("bank")
-@CommandCategory(CommandCategory.CATEGORY.CURRENCY)
+@CommandCategory(CommandCategory.CATEGORY.FUN)
 @SelfPermission(Permission.MESSAGE_WRITE)
 public class BankCommand implements ICommand, ISlashCommand {
     Logger LOGGER = LoggerFactory.getLogger(BankCommand.class);

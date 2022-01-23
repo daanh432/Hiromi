@@ -4,6 +4,7 @@ import nl.daanh.hiromi.database.IDatabaseManager;
 import nl.daanh.hiromi.database.api.HiromiApiAsyncDataSource;
 import nl.daanh.hiromi.database.api.HiromiApiSyncDataSource;
 import nl.daanh.hiromi.database.disk.HiromiDiskDataSource;
+import nl.daanh.hiromi.database.postgres.HiromiPostgresDataSource;
 import nl.daanh.hiromi.exceptions.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -110,8 +111,10 @@ public abstract class BaseHiromiConfig implements IHiromiConfig {
             case "mariadb":
             case "maria":
                 throw new NotImplementedException("Mysql data source has not been implemented yet");
+            case "postgres":
             case "postgresql":
-                throw new NotImplementedException("PostgreSQL data source has not been implemented yet");
+                this.databaseManager = new HiromiPostgresDataSource();
+                break;
             case "sqlite":
                 throw new NotImplementedException("SQLite data source has not been implemented yet");
             case "mongodb":

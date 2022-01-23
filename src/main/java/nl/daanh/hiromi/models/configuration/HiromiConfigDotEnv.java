@@ -51,4 +51,19 @@ public class HiromiConfigDotEnv extends BaseHiromiConfig {
             return Optional.empty();
         }
     }
+
+    @Override
+    public String getJdbcUrl() {
+        return this.getString("JDBC_URL").orElseThrow();
+    }
+
+    @Override
+    public String getJdbcUsername() {
+        return this.getString("JDBC_USERNAME").orElseThrow();
+    }
+
+    @Override
+    public String getJdbcPassword() {
+        return this.getString("JDBC_PASSWORD").orElseThrow();
+    }
 }

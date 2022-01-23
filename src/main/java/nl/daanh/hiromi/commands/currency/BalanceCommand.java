@@ -13,7 +13,7 @@ import nl.daanh.hiromi.utils.MessageFormatting;
 
 @CommandInvoke("bal")
 @CommandInvoke("balance")
-@CommandCategory(CommandCategory.CATEGORY.CURRENCY)
+@CommandCategory(CommandCategory.CATEGORY.FUN)
 @SelfPermission(Permission.MESSAGE_WRITE)
 public class BalanceCommand implements IGenericCommand {
     @Override

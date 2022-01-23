@@ -131,8 +131,10 @@ public class SettingsCommand implements ICommand, ISlashCommand {
         switch (key) {
             case "prefix":
                 return format(setting.Name, databaseManager.getPrefix(guild), updated);
+            case "currency":
+                return format(setting.Name, databaseManager.getCurrency(guild), updated);
             case "fun":
-                return formatCategory(setting.Name, databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY), updated);
+                return formatCategory(setting.Name, databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.FUN), updated);
             case "music":
                 return formatCategory(setting.Name, databaseManager.getCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC), updated);
             case "moderation":
@@ -154,7 +156,10 @@ public class SettingsCommand implements ICommand, ISlashCommand {
                 databaseManager.setPrefix(guild, value);
                 break;
             case "currency":
-                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY, MessageFormatting.mapStringToBool(value));
+                databaseManager.setCurrency(guild, value);
+                break;
+            case "fun":
+                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.FUN, MessageFormatting.mapStringToBool(value));
                 break;
             case "music":
                 databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC, MessageFormatting.mapStringToBool(value));
@@ -218,7 +223,10 @@ public class SettingsCommand implements ICommand, ISlashCommand {
                 databaseManager.setPrefix(guild, value.getAsString());
                 break;
             case "currency":
-                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.CURRENCY, value.getAsBoolean());
+                databaseManager.setCurrency(guild, value.getAsString());
+                break;
+            case "fun":
+                databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.FUN, value.getAsBoolean());
                 break;
             case "music":
                 databaseManager.setCategoryEnabled(guild, CommandCategory.CATEGORY.MUSIC, value.getAsBoolean());
