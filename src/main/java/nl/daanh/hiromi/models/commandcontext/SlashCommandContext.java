@@ -6,22 +6,20 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import nl.daanh.hiromi.lavaplayer.GuildMusicManager;
-import nl.daanh.hiromi.lavaplayer.MusicManager;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
 import org.jetbrains.annotations.NotNull;
 
 public class SlashCommandContext implements ISlashCommandContext {
     private final SlashCommandEvent event;
-    private final IConfiguration configuration;
+    private final IHiromiConfig configuration;
 
-    public SlashCommandContext(SlashCommandEvent event, IConfiguration configuration) {
+    public SlashCommandContext(SlashCommandEvent event, IHiromiConfig configuration) {
         this.event = event;
         this.configuration = configuration;
     }
 
     @Override
-    public IConfiguration getConfiguration() {
+    public IHiromiConfig getConfiguration() {
         return this.configuration;
     }
 
@@ -80,10 +78,11 @@ public class SlashCommandContext implements ISlashCommandContext {
         return this.getGuild().getAudioManager();
     }
 
-    @Override
-    public GuildMusicManager getGuildMusicManager() {
-        return MusicManager.getInstance().getGuildAudioPlayer(this.getGuild());
-    }
+// TODO Guild music manager
+//    @Override
+//    public GuildMusicManager getGuildMusicManager() {
+//        return MusicManager.getInstance().getGuildAudioPlayer(this.getGuild());
+//    }
 
     @Override
     public TextChannel getChannel() {

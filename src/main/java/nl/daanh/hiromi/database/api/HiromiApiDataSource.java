@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import nl.daanh.hiromi.database.IDatabaseManager;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
@@ -82,12 +83,16 @@ public abstract class HiromiApiDataSource implements IDatabaseManager {
     public String getKey(Member member, String key) {
         load(member);
         final Pair<Instant, JSONObject> cached = guildMemberCache.get(Pair.of(member.getGuild().getIdLong(), member.getIdLong()));
-        if (cached != null) {
-            final JSONObject json = cached.getRight();
+        try {
+            if (cached != null) {
+                final JSONObject json = cached.getRight();
 
-            if (json.getJSONObject("settings").has(key)) {
-                return json.getJSONObject("settings").getString(key);
+                if (json.getJSONObject("settings").has(key)) {
+                    return json.getJSONObject("settings").getString(key);
+                }
             }
+        } catch (JSONException e) {
+            LOGGER.error("Something went wrong trying to parse the JSON.", e);
         }
 
         return this.getDefaultSetting(key);

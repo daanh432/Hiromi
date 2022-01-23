@@ -9,7 +9,7 @@ public @interface CommandCategory {
 
     enum CATEGORY {
         OTHER(1),
-        CURRENCY(2),
+        FUN(2),
         MUSIC(4),
         MODERATION(8),
         PERSONALITY(16),

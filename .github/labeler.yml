@@ -1,14 +1,23 @@
-currency system:
-- any: ['src/main/java/nl/daanh/commands/fun/*']
+fun system:
+- src/main/java/nl/daanh/hiromi/commands/fun/*
 
 emoji system:
-- any: ['src/main/java/nl/daanh/commands/emoji/*']
+- src/main/java/nl/daanh/hiromi/commands/emoji/*
 
 leveling system:
-- any: ['src/main/java/nl/daanh/commands/leveling/*']
+- src/main/java/nl/daanh/hiromi/commands/leveling/*
 
 music system:
-- any: ['src/main/java/nl/daanh/commands/music/*']
+- src/main/java/nl/daanh/hiromi/commands/music/*
 
 personality system:
-- any: ['src/main/java/nl/daanh/commands/personality/*']
+- src/main/java/nl/daanh/hiromi/commands/personality/*
+
+datasource:
+- src/main/java/nl/daanh/hiromi/database/*
+
+utils:
+- src/main/java/nl/daanh/hiromi/utils/*
+
+listeners:
+- src/main/java/nl/daanh/hiromi/listeners/*

@@ -1,6 +1,6 @@
 package nl.daanh.hiromi.database;
 
-public abstract class HiromiDatabaseException extends RuntimeException {
+public class HiromiDatabaseException extends RuntimeException {
     public HiromiDatabaseException() {
         super();
     }

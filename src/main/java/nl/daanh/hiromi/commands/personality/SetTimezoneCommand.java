@@ -16,8 +16,8 @@ import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
 
 import java.time.DateTimeException;
-import java.time.ZoneId;
 import java.util.List;
+import java.util.TimeZone;
 
 @CommandInvoke("settimezone")
 @CommandInvoke("settime")
@@ -27,14 +27,13 @@ import java.util.List;
 @CommandCategory(CommandCategory.CATEGORY.PERSONALITY)
 @SelfPermission(Permission.MESSAGE_WRITE)
 public class SetTimezoneCommand implements ICommand, ISlashCommand {
-    private ZoneId parseTimezone(String timezoneInput) {
+    private TimeZone parseTimezone(String timezoneInput) {
         try {
-            return ZoneId.of(timezoneInput);
+            return TimeZone.getTimeZone(timezoneInput);
         } catch (DateTimeException exception) {
             return null;
         }
     }
-
 
     @Override
     public void handle(ICommandContext ctx) {
@@ -47,7 +46,7 @@ public class SetTimezoneCommand implements ICommand, ISlashCommand {
             return;
         }
 
-        ZoneId zoneId = parseTimezone(args.get(0));
+        TimeZone zoneId = parseTimezone(args.get(0));
 
         if (zoneId == null) {
             ctx.reply("Timezone invalid or not found. Please try a different input. Examples: ``Europe/Amsterdam``, ``America/New_York``, ``UTC``").queue();
@@ -72,7 +71,7 @@ public class SetTimezoneCommand implements ICommand, ISlashCommand {
             return;
         }
 
-        ZoneId zoneId = parseTimezone(timezoneOption.getAsString());
+        TimeZone zoneId = parseTimezone(timezoneOption.getAsString());
 
         if (zoneId == null) {
             ctx.reply("Timezone invalid or not found. Please try a different input. Examples: ``Europe/Amsterdam``, ``America/New_York``, ``UTC``")

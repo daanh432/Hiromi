@@ -6,9 +6,7 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import nl.daanh.hiromi.lavaplayer.GuildMusicManager;
-import nl.daanh.hiromi.lavaplayer.MusicManager;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -16,10 +14,10 @@ import java.util.List;
 
 public class ButtonCommandContext implements IButtonCommandContext {
     private final ButtonClickEvent event;
-    private final IConfiguration configuration;
+    private final IHiromiConfig configuration;
     private final List<String> args;
 
-    public ButtonCommandContext(ButtonClickEvent event, String[] data, IConfiguration configuration) {
+    public ButtonCommandContext(ButtonClickEvent event, String[] data, IHiromiConfig configuration) {
         this.event = event;
         this.configuration = configuration;
         this.args = Arrays.asList(data).subList(3, data.length);
@@ -38,7 +36,7 @@ public class ButtonCommandContext implements IButtonCommandContext {
     }
 
     @Override
-    public IConfiguration getConfiguration() {
+    public IHiromiConfig getConfiguration() {
         return this.configuration;
     }
 
@@ -92,10 +90,11 @@ public class ButtonCommandContext implements IButtonCommandContext {
         return this.getGuild().getAudioManager();
     }
 
-    @Override
-    public GuildMusicManager getGuildMusicManager() {
-        return MusicManager.getInstance().getGuildAudioPlayer(this.getGuild());
-    }
+// TODO Music manager
+//    @Override
+//    public GuildMusicManager getGuildMusicManager() {
+//        return MusicManager.getInstance().getGuildAudioPlayer(this.getGuild());
+//    }
 
     @Override
     public TextChannel getChannel() {

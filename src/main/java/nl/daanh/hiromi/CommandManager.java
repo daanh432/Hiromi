@@ -3,8 +3,8 @@ package nl.daanh.hiromi;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromi.commands.currency.BalanceCommand;
-import nl.daanh.hiromi.commands.currency.BankCommand;
+import nl.daanh.hiromi.commands.fun.BalanceCommand;
+import nl.daanh.hiromi.commands.fun.BankCommand;
 import nl.daanh.hiromi.commands.other.LoadCommand;
 import nl.daanh.hiromi.commands.other.PingCommand;
 import nl.daanh.hiromi.commands.other.SettingsCommand;
@@ -14,11 +14,14 @@ import nl.daanh.hiromi.commands.personality.TimezoneCommand;
 import nl.daanh.hiromi.models.commandcontext.*;
 import nl.daanh.hiromi.models.commands.IBaseCommand;
 import nl.daanh.hiromi.models.commands.ICommand;
+import nl.daanh.hiromi.models.commands.IGenericCommand;
 import nl.daanh.hiromi.models.commands.ISlashCommand;
 import nl.daanh.hiromi.models.commands.annotations.CommandCategory;
 import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,13 +31,12 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CommandManager {
-    private final IConfiguration configuration;
+    private final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
     private final HashMap<String, ICommand> commands = new HashMap<>();
     private final HashMap<String, ISlashCommand> slashCommands = new HashMap<>();
+    private final HashMap<String, IGenericCommand> genericCommands = new HashMap<>();
 
-    public CommandManager(IConfiguration configuration) {
-        this.configuration = configuration;
-
+    public CommandManager(IHiromiConfig config) {
         // Miscellaneous
         addCommand(new PingCommand());
         addCommand(new LoadCommand(this));
@@ -57,7 +59,7 @@ public class CommandManager {
         if (command.getClass().getAnnotationsByType(SelfPermission.class).length == 0)
             throw new RuntimeException("Command self permissions are required.");
 
-        if (commandCategory.value() == CommandCategory.CATEGORY.MUSIC && !configuration.getMusicEnabled())
+        if (commandCategory.value() == CommandCategory.CATEGORY.MUSIC && !Hiromi.getConfig().getMusicEnabled())
             return;
 
         if (command instanceof ICommand)
@@ -65,6 +67,9 @@ public class CommandManager {
 
         if (command instanceof ISlashCommand)
             this.addSlashCommand((ISlashCommand) command);
+
+        if (command instanceof IGenericCommand)
+            this.addGenericCommand((IGenericCommand) command);
     }
 
     private void addGuildCommand(ICommand command) {
@@ -86,12 +91,19 @@ public class CommandManager {
         this.slashCommands.put(command.getInvoke(), command);
     }
 
-    public List<ICommand> getCommands() {
-        List<ICommand> commands = new ArrayList<>();
-        this.commands.forEach((s, command) -> {
-            if (!commands.contains(command)) commands.add(command);
-        });
-        return commands;
+    private void addGenericCommand(IGenericCommand command) {
+        if (this.genericCommands.containsKey(command.getCommandDefinition().getName())) {
+            throw new RuntimeException("Invoke has already been defined!");
+        }
+
+        this.genericCommands.put(command.getCommandDefinition().getName(), command);
+
+        for (CommandInvoke annotation : command.getClass().getAnnotationsByType(CommandInvoke.class)) {
+            if (this.commands.containsKey(annotation.value())) {
+                continue;
+            }
+            this.genericCommands.put(annotation.value(), command);
+        }
     }
 
     public List<ISlashCommand> getSlashCommands() {
@@ -102,24 +114,33 @@ public class CommandManager {
         return slashCommands;
     }
 
+    public List<IGenericCommand> getGenericCommands() {
+        List<IGenericCommand> genericCommands = new ArrayList<>();
+        this.genericCommands.forEach((s, command) -> {
+            if (!genericCommands.contains(command)) genericCommands.add(command);
+        });
+        return genericCommands;
+    }
+
     @Nullable
     public ICommand getCommand(String invoke) {
-        String invokeLowerCase = invoke.toLowerCase();
-
-        return this.commands.getOrDefault(invokeLowerCase, null);
+        return this.commands.getOrDefault(invoke.toLowerCase(), null);
     }
 
     @Nullable
     public ISlashCommand getSlashCommand(String invoke) {
-        String invokeLowerCase = invoke.toLowerCase();
+        return this.slashCommands.getOrDefault(invoke.toLowerCase(), null);
+    }
 
-        return this.slashCommands.getOrDefault(invokeLowerCase, null);
+    @Nullable
+    public IGenericCommand getGenericCommand(String invoke) {
+        return this.genericCommands.getOrDefault(invoke.toLowerCase(), null);
     }
 
     private boolean cantContinue(IBaseCommand command, IBaseCommandContext ctx) {
         CommandCategory.CATEGORY category = command.getClass().getAnnotation(CommandCategory.class).value();
 
-        if (category != CommandCategory.CATEGORY.OTHER && !this.configuration.getDatabaseManager().getCategoryEnabled(ctx.getGuild(), category))
+        if (category != CommandCategory.CATEGORY.OTHER && !Hiromi.getConfig().getDatabaseManager().getCategoryEnabled(ctx.getGuild(), category))
             return true;
 
         return !command.checkPermissions(ctx);
@@ -130,47 +151,60 @@ public class CommandManager {
         final List<String> args = Arrays.asList(splitMessage).subList(1, splitMessage.length);
 
         ICommand command = this.getCommand(splitMessage[0].toLowerCase());
+        if (command != null) {
+            ICommandContext ctx = new GuildMessageCommandContext(event, args, Hiromi.getConfig());
+            if (cantContinue(command, ctx)) return;
 
-        if (command == null) return;
+            try {
+                command.handle(ctx);
+            } catch (Exception exception) {
+                // TODO handle this? send the user error message?
+                LOGGER.error("Something went wrong trying to handle the command.", exception);
+            }
 
-        ICommandContext ctx = new GuildMessageCommandContext(event, args, this.configuration);
+            return;
+        }
 
-        if (cantContinue(command, ctx)) return;
+        IGenericCommand genericCommand = this.getGenericCommand(splitMessage[0].toLowerCase());
+        if (genericCommand == null) return;
+        IGenericCommandContext ctx = new GenericCommandContext(event, Hiromi.getConfig());
+        if (cantContinue(genericCommand, ctx)) return;
 
         try {
-            command.handle(ctx);
+            genericCommand.handle(ctx);
         } catch (Exception exception) {
             // TODO handle this? send the user error message?
-            exception.printStackTrace();
-            event.getChannel().sendMessage(
-                    String.format("Oops, it looks like something went wrong...\n*%s: %s*",
-                            exception.getClass(),
-                            exception.getMessage()
-                    )
-            ).queue();
+            LOGGER.error("Something went wrong trying to handle the command.", exception);
         }
     }
 
     public void handle(SlashCommandEvent event) {
-        ISlashCommand command = this.getSlashCommand(event.getName());
+        if (event.getGuild() == null) return;
 
-        if (command == null) return;
+        ISlashCommand slashCommand = this.getSlashCommand(event.getName());
+        if (slashCommand != null) {
+            ISlashCommandContext ctx = new SlashCommandContext(event, Hiromi.getConfig());
+            if (cantContinue(slashCommand, ctx)) return;
 
-        ISlashCommandContext ctx = new SlashCommandContext(event, this.configuration);
+            try {
+                slashCommand.handle(ctx);
+            } catch (Exception exception) {
+                // TODO handle this? send the user error message?
+                LOGGER.error("Something went wrong trying to handle the command.", exception);
+            }
+            return;
+        }
 
-        if (cantContinue(command, ctx)) return;
+        IGenericCommand genericCommand = this.getGenericCommand(event.getName());
+        if (genericCommand == null) return;
+        IGenericCommandContext ctx = new GenericCommandContext(event, Hiromi.getConfig());
+        if (cantContinue(genericCommand, ctx)) return;
 
         try {
-            command.handle(ctx);
+            genericCommand.handle(ctx);
         } catch (Exception exception) {
             // TODO handle this? send the user error message?
-            exception.printStackTrace();
-            event.getTextChannel().sendMessage(
-                    String.format("Oops, it looks like something went wrong...\n*%s: %s*",
-                            exception.getClass(),
-                            exception.getMessage()
-                    )
-            ).queue();
+            LOGGER.error("Something went wrong trying to handle the command.", exception);
         }
     }
 
@@ -180,22 +214,14 @@ public class CommandManager {
         ISlashCommand command = this.getSlashCommand(type);
 
         if (command == null) return;
-
-        IButtonCommandContext ctx = new ButtonCommandContext(event, data, this.configuration);
-
+        IButtonCommandContext ctx = new ButtonCommandContext(event, data, Hiromi.getConfig());
         if (cantContinue(command, ctx)) return;
 
         try {
             command.handle(subtype, ctx);
         } catch (Exception exception) {
             // TODO handle this? send the user error message?
-            exception.printStackTrace();
-            event.getTextChannel().sendMessage(
-                    String.format("Oops, it looks like something went wrong...\n*%s: %s*",
-                            exception.getClass(),
-                            exception.getMessage()
-                    )
-            ).queue();
+            LOGGER.error("Something went wrong trying to handle the command.", exception);
         }
     }
 }

@@ -6,18 +6,16 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import nl.daanh.hiromi.lavaplayer.GuildMusicManager;
-import nl.daanh.hiromi.lavaplayer.MusicManager;
-import nl.daanh.hiromi.models.configuration.IConfiguration;
+import nl.daanh.hiromi.models.configuration.IHiromiConfig;
 
 import java.util.List;
 
 public class GuildMessageCommandContext implements ICommandContext {
     private final GuildMessageReceivedEvent event;
     private final List<String> args;
-    private final IConfiguration configuration;
+    private final IHiromiConfig configuration;
 
-    public GuildMessageCommandContext(GuildMessageReceivedEvent event, List<String> args, IConfiguration configuration) {
+    public GuildMessageCommandContext(GuildMessageReceivedEvent event, List<String> args, IHiromiConfig configuration) {
         this.event = event;
         this.args = args;
         this.configuration = configuration;
@@ -28,7 +26,7 @@ public class GuildMessageCommandContext implements ICommandContext {
     }
 
     @Override
-    public IConfiguration getConfiguration() {
+    public IHiromiConfig getConfiguration() {
         return this.configuration;
     }
 
@@ -87,10 +85,11 @@ public class GuildMessageCommandContext implements ICommandContext {
         return this.getGuild().getAudioManager();
     }
 
-    @Override
-    public GuildMusicManager getGuildMusicManager() {
-        return MusicManager.getInstance().getGuildAudioPlayer(this.getGuild());
-    }
+// TODO Guild music manager
+//    @Override
+//    public GuildMusicManager getGuildMusicManager() {
+//        return MusicManager.getInstance().getGuildAudioPlayer(this.getGuild());
+//    }
 
     @Override
     public MessageAction reply(String content) {

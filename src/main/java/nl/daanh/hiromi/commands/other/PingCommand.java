@@ -13,6 +13,7 @@ import nl.daanh.hiromi.models.commands.annotations.CommandInvoke;
 import nl.daanh.hiromi.models.commands.annotations.SelfPermission;
 
 @CommandInvoke("ping")
+@CommandInvoke("lag")
 @CommandCategory(CommandCategory.CATEGORY.OTHER)
 @SelfPermission(Permission.MESSAGE_WRITE)
 public class PingCommand implements ISlashCommand, ICommand {
