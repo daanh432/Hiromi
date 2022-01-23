@@ -1,0 +1,31 @@
+services:
+  bot:
+    build: .
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
+    depends_on: [ database, lavalink ]
+
+  lavalink:
+    image: fredboat/lavalink:master
+    volumes:
+      - type: bind
+        source: ./lavalink_config.yml
+        target: /opt/Lavalink/application.yml
+      - type: bind
+        source: ./lavalink-plugins
+        target: /opt/Lavalink/plugins
+    expose: [ 2333 ]
+
+  database:
+    image: postgres:14
+    volumes:
+      - type: bind
+        source: ./database
+        target: /var/lib/postgresql/data
+    expose: [ 5432 ]
+    environment:
+      POSTGRES_USER: hiromi
+      POSTGRES_PASSWORD: hiromi
+      POSTGRES_DB: hiromi
