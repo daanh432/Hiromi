@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class HiromiPostgresDataSource implements IDatabaseManager {
+    private static final String DRIVER_NAME = "org.postgresql.Driver";
     private static final int MAX_LIFETIME = 300 * 60 * 1000;
     private static final int MIN_IDLE = 5;
     private static final List<IPostgresMigration> MIGRATION_LIST = List.of(
@@ -40,6 +41,12 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
         this.config.setMaxLifetime(MAX_LIFETIME);
         this.config.setMinimumIdle(MIN_IDLE);
         this.config.setMaximumPoolSize(50);
+        try {
+            Class.forName(DRIVER_NAME);
+            this.config.setDriverClassName(DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Postgres driver was not found.", e);
+        }
 
         // TODO determine if these are required for postgres
         this.config.addDataSourceProperty("cachePrepStmts", "true");
