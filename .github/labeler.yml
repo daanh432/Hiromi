@@ -1,4 +1,4 @@
-currency system:
+fun system:
 - src/main/java/nl/daanh/hiromi/commands/fun/*
 
 emoji system:
