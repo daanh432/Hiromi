@@ -14,7 +14,7 @@ personality system:
 - src/main/java/nl/daanh/hiromi/commands/personality/*
 
 datasource:
-- src/main/java/nl/daanh/hiromi/database/*
+- any: ['src/main/java/nl/daanh/hiromi/database/**/*']
 
 utils:
 - src/main/java/nl/daanh/hiromi/utils/*
