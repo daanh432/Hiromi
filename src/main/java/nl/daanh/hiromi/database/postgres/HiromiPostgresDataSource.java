@@ -61,9 +61,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
      * All changes that are required will be called from here
      */
     private void migrate() {
-        try {
-            final Connection connection = this.getConnection();
-
+        try (final Connection connection = this.getConnection()) {
             final IPostgresMigration createMigrationsTable = new CreateMigrationsTable();
             createMigrationsTable.migrate(connection);
 
@@ -90,7 +88,6 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
                     }
                 }
             });
-
         } catch (SQLException exception) {
             LOGGER.error("Something went wrong trying to migrate the database.", exception);
             Hiromi.getEventManager().shutdown();
@@ -104,8 +101,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
     @Nullable
     @Override
     public String getKey(Guild guild, String key) {
-        try {
-            final Connection connection = getConnection();
+        try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement("select * from hiromi.guild_settings where id = ?  and key = ?");
             preparedStatement.setLong(1, guild.getIdLong());
             preparedStatement.setString(2, key);
@@ -124,8 +120,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
     @Nullable
     @Override
     public String getKey(Member member, String key) {
-        try {
-            final Connection connection = getConnection();
+        try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement("select * from hiromi.guild_member_settings where guild_id = ? and member_id = ? and key = ?");
             preparedStatement.setLong(1, member.getGuild().getIdLong());
             preparedStatement.setLong(2, member.getIdLong());
@@ -145,8 +140,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
     @Nullable
     @Override
     public String getKey(User user, String key) {
-        try {
-            final Connection connection = getConnection();
+        try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement("select * from hiromi.user_settings where id = ?  and key = ?");
             preparedStatement.setLong(1, user.getIdLong());
             preparedStatement.setString(2, key);
@@ -164,8 +158,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
 
     @Override
     public void writeKey(Guild guild, String key, String value) {
-        try {
-            final Connection connection = getConnection();
+        try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement("insert into guild_settings (id, key, value) VALUES(?, ?, ?) on conflict on constraint guild_settings_pk do update set value=?");
             preparedStatement.setLong(1, guild.getIdLong());
             preparedStatement.setString(2, key);
@@ -179,8 +172,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
 
     @Override
     public void writeKey(Member member, String key, String value) {
-        try {
-            final Connection connection = getConnection();
+        try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement("insert into guild_member_settings (guild_id, member_id, key, value) VALUES(?, ?, ?, ?) on conflict on constraint guild_member_settings_pk do update set value=?");
             preparedStatement.setLong(1, member.getGuild().getIdLong());
             preparedStatement.setLong(2, member.getIdLong());
@@ -195,8 +187,7 @@ public class HiromiPostgresDataSource implements IDatabaseManager {
 
     @Override
     public void writeKey(User user, String key, String value) {
-        try {
-            final Connection connection = getConnection();
+        try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement("insert into user_settings (id, key, value) VALUES(?, ?, ?) on conflict on constraint user_settings_pk do update set value=?");
             preparedStatement.setLong(1, user.getIdLong());
             preparedStatement.setString(2, key);
